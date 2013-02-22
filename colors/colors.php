@@ -1,5 +1,7 @@
 <?php
 
+writeColors($_GET['color']);
+
 function writeColors($newcolor) {
 
 	$currentlist = file_get_contents("colors.txt");

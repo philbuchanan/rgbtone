@@ -171,7 +171,8 @@ function save() {
 	colors.unshift(value);
 	
 	localStorage.setItem('colors', JSON.stringify(colors));
-	location.reload();
+	saveColors(value);
+	//location.reload();
 
 }
 
@@ -198,3 +199,53 @@ function displayRecents() {
 	savedColors.innerHTML = string;
 
 }
+
+
+
+
+
+/* AJAX Stuff */
+
+function ajaxRequest() {
+
+	var activexmodes = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP'];
+	
+	// IE
+	if (window.ActiveXObject) {
+		for (var i = 0; i < activexmodes.length; i++) {
+			try {
+				return new ActiveXObject(activexmodes[i])
+			}
+			catch(e) {}
+		}
+	}
+	// If Mozilla, Safari etc
+	else if (window.XMLHttpRequest) {
+		return new XMLHttpRequest();
+	}
+	else {
+		return false;
+	}
+
+}
+
+function saveColors(value) {
+
+	ajaxRequest = ajaxRequest();
+	ajaxRequest.onreadystatechange = function() {
+		if (ajaxRequest.readyState == 4){
+			if (ajaxRequest.status == 200 || window.location.href.indexOf('http') == -1) {
+				// Success
+				//document.getElementById("result").innerHTML = ajaxRequest.responseText
+			}
+			else {
+				// Error
+			}
+		}
+	}
+	
+	ajaxRequest.open('GET', 'colors/colors.php?color=' + value, true);
+	ajaxRequest.send(null);
+
+}
+
