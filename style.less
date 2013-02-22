@@ -1,0 +1,191 @@
+// Less Mixins
+.rounded(@radius) {
+	-webkit-border-radius: @radius;
+	   -moz-border-radius: @radius;
+	        border-radius: @radius;
+}
+.border-radius(@topleft: 2, @topright: 2, @bottomleft: 2, @bottomright: 2) {
+	-webkit-border-top-left-radius: 	@topleft;
+	-webkit-border-top-right-radius:	@topright;
+	-webkit-border-bottom-left-radius:	@bottomleft;
+	-webkit-border-bottom-right-radius:	@bottomright;
+	   -moz-border-radius-topleft:		@topleft;
+	   -moz-border-radius-topright:		@topright;
+	   -moz-border-radius-bottomleft:	@bottomleft;
+	   -moz-border-radius-bottomright:	@bottomright;
+			border-top-left-radius:		@topleft;
+			border-top-right-radius:	@topright;
+			border-bottom-left-radius:	@bottomleft;
+			border-bottom-right-radius:	@bottomright;
+}
+.box-shadow(@prams) {
+	-webkit-box-shadow: @prams;
+	   -moz-box-shadow: @prams;
+	        box-shadow: @prams;
+}
+
+
+/* RESET
+   ---------------------------------- */
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+blockquote, q {quotes: none;}
+hr {display: block; height: 0; border: 0; border-top: 1px solid #ddd; margin: 0; padding: 0;}
+input, select {vertical-align: middle;}
+button, input, select, textarea {margin: 0;}
+
+
+/* FONT TREATMENTS
+   ---------------------------------- */
+ 
+html, body {font: 13px/18px Helvetica, Arial, sans-serif;}
+h1 {
+	color: #000;
+	font-size: 60px;
+	font-weight: bold;
+	text-transform: uppercase;
+	text-indent: -3px;
+	margin: 52px 0 23px;
+}
+h2 {
+	color: #5d6670;
+	font-size: 16px;
+	a {
+		color: #5d6670;
+		text-decoration: none;
+		&:hover {text-decoration: underline;}
+	}
+}
+p {line-height: 20px;}
+hr {
+	border-top: 1px dashed #aaa;
+	margin: 24px 0 30px;
+}
+
+
+/* BASIC STRUCTURE
+   ---------------------------------- */
+
+.container {
+	width: 638px;
+	margin: 36px auto;
+	border: 1px solid #ccc;
+	.rounded(6px);
+}
+.header {
+	background: white;
+	padding: 28px 36px 30px;
+	position: relative;
+	.border-radius(6px,6px,0,0);
+}
+.controls {
+	background: #f5f5f5;
+	border-top: 1px solid #ccc;
+	padding: 28px 36px 38px;
+	.border-radius(0, 0, 6px, 6px);
+}
+
+
+/* PRIMARY STYLES
+   ---------------------------------- */
+
+label {
+	display: block;
+	color: #5d6770;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	text-shadow: 0px 1px 1px white;
+	margin-bottom: 10px;
+}
+input {
+	color: #444;
+	font-size: 36px;
+	display: inline;
+	font-family: sans-serif;
+	width: 284px;
+	margin-left: -2px;
+	padding: 6px;
+	border: 2px solid #CCC;
+	.rounded(6px);
+	&.submit {
+		width: 1px;
+		height: 1px;
+	}
+	&:focus {outline: none;}
+}
+.help-text {
+	color: #5D6670;
+	font-size: 12px;
+	text-shadow: 0px 1px 1px white;
+	margin: 10px 0 0;
+}
+.preview, .recent-preview {
+	position: absolute;
+	right: 34px;
+	top: 38px;
+	.rounded(6px);
+	.box-shadow(0px 1px 3px rgba(0, 0, 0, 0.3));
+	.color-area {
+		height: 150px;
+		width: 160px;
+		.border-radius(6px, 6px, 0, 0);
+	}
+	.text-area {
+		background: white;
+		padding: 4px 6px 5px;
+		padding: 8px;
+		.border-radius(0, 0, 6px, 6px);
+		p {
+			font-size: 14px;
+			line-height: 18px;
+			&.label {font-weight: bold;}
+			#save {
+				float: right;
+				color: #000;
+				font-size: 11px;
+				font-weight: normal;
+				text-transform: uppercase;
+				text-decoration: none;
+				margin-top: 2px;
+				&:hover {text-decoration: underline;}
+			}
+		}
+	}
+}
+.hide {display: none;}
+.colors {
+	width: 638px;
+	margin: 0 auto 36px;
+}
+.recent-preview {
+	position: inherit;
+	float: left;
+	margin: 0 16px 36px 0;
+	.color-area {
+		height: 87px;
+		width: 93px;
+	}
+	.text-area {
+		p {
+			font-size: 12px;
+			line-height: 16px;
+		}
+	}
+}
+.last {margin-right: 0;}
