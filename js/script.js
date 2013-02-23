@@ -16,6 +16,7 @@ var preview     = document.getElementById('preview');
 var pcolor      = document.getElementById('previewcolor');
 var ptitle      = document.getElementById('previewtitle');
 var saveBtn     = document.getElementById('save');
+var savedTitle  = document.getElementById('savedtitle');
 var savedColors = document.getElementById('savedcolors');
 
 var maxSave = 6;
@@ -31,7 +32,7 @@ window.onload = init();
  * Initialization
  * 
  * Creates event listeners and displays recent
- * saved colors
+ * saved colors.
  */
 
 function init() {
@@ -56,29 +57,47 @@ function init() {
  *
  * Gets the RGB string for a given HEX value and
  * prints it to the RGB input.
- * 
- * @param  value  the hex value to convert
  */
 
 function getRgbValue() {
 
 	var value = hexInput.value;
 	
-	if (value.length === 3) var fullvalue = value.substr(0, 1) + value.substr(0, 1) + value.substr(1, 1) + value.substr(1, 1) + value.substr(2, 1) + value.substr(2, 1);
-	else var fullvalue = value;
+	if (value.length === 3) {
+		var r = value.substr(0, 1);
+		var g = value.substr(1, 1);
+		var b = value.substr(2, 1);
+		var hexValue = r + r + g + g + b + b;
+	}
+	else if (value.length === 6) {
+		var hexValue = value;
+	}
 	
-	if (hexToRgb(fullvalue)) {
+	if (hexValue) {
 	
-		var rgbValues = hexToRgb(fullvalue);
-		rgbInput.value = rgbValues['r'] + ', ' + rgbValues['g'] + ', ' + rgbValues['b'];
-		pcolor.style.background = '#' + fullvalue;
-		ptitle.innerHTML = '#' + value;
-		preview.className = '';
-		saveBtn.className = '';
+		var rgbValues = hexToRgb(hexValue);
+		if (rgbValues) {
+			rgbInput.value = rgbValues['r'] + ', ' + rgbValues['g'] + ', ' + rgbValues['b'];
+			pcolor.style.background = '#' + hexValue;
+			ptitle.innerHTML = '#' + value;
+			preview.classList.remove('hide');
+		}
 	
+	}
+	else {
+		preview.classList.add('hide');
 	}
 
 }
+
+
+
+/**
+ * HEX to RGB Converter
+ * 
+ * @param  hex  the HEX code to convert
+ * return  array of RGB values
+ */
 
 function hexToRgb(hex) {
 
@@ -98,43 +117,67 @@ function hexToRgb(hex) {
  *
  * Gets the HEX value for a given RGB string and
  * prints it to the HEX input.
- * 
- * @param  value  the rgb value string to convert
  */
 
 function getHexValue() {
 
 	var value = rgbInput.value;
 	
-	value.replace(/\s+/g, ' ');
-	var rgbArray = value.split(",");
+	value.replace(' ', '');
+	var rgb = value.split(",", 3);
 	
-	if (rgbArray[0] > 255) rgbArray[0] = 255;
-	if (rgbArray[1] > 255) rgbArray[1] = 255;
-	if (rgbArray[2] > 255) rgbArray[2] = 255;
+	var r = checkColorValue(rgb[0]);
+	var g = checkColorValue(rgb[1]);
+	var b = checkColorValue(rgb[2]);
 	
-	if (rgbArray[0] < 0) rgbArray[0] = 0;
-	if (rgbArray[1] < 0) rgbArray[1] = 0;
-	if (rgbArray[2] < 0) rgbArray[2] = 0;
-	
-	if (rgbToHex(parseInt(rgbArray[0]), parseInt(rgbArray[1]), parseInt(rgbArray[2]))) {
+	if (r !== false && g !== false && b !== false) {
 		
-		var hexValue = rgbToHex(parseInt(rgbArray[0]), parseInt(rgbArray[1]), parseInt(rgbArray[2]));
+		var hexValue = rgbToHex(r, g, b);
 		hexInput.value = hexValue;
 		pcolor.style.background = '#' + hexValue;
 		ptitle.innerHTML = '#' + hexValue;
-		preview.className = '';
-		saveBtn.className = '';
+		preview.classList.remove('hide');
+	
+	}
+	else {
+	
+		preview.classList.add('hide');
 	
 	}
 	
 }
 
-function rgbToHex(r, g, b) {
 
-	if (isNaN(r)) r = 255;
-	if (isNaN(g)) g = 255;
-	if (isNaN(b)) b = 255;
+
+/**
+ * Check Color Value
+ * 
+ * @param  n  the number to check
+ * return  returns the fixed number, or false if NaN
+ */
+
+function checkColorValue(n) {
+
+	n = parseInt(Math.round(n), 10);
+	if (isNaN(n)) return false;
+	else if (n > 255) return 255;
+	else if (n < 0) return 0;
+	else return n;
+
+}
+
+
+
+/**
+ * RGB to HEX Converter
+ * 
+ * @param  r  the red value
+ * @param  g  the green value
+ * @param  b  the blue value
+ * return  the HEX string
+ */
+
+function rgbToHex(r, g, b) {
 	
 	var hr = componentToHex(r);
 	var hg = componentToHex(g);
@@ -143,9 +186,9 @@ function rgbToHex(r, g, b) {
 	if (hr.substr(0, 1) == hr.substr(1, 1)) {
 		if (hg.substr(0, 1) == hg.substr(1, 1)) {
 			if (hb.substr(0, 1) == hb.substr(1, 1)) {
-				var hr = componentToHex(r).substr(0, 1);
-				var hg = componentToHex(g).substr(0, 1);
-				var hb = componentToHex(b).substr(0, 1);
+				hr = componentToHex(r).substr(0, 1);
+				hg = componentToHex(g).substr(0, 1);
+				hb = componentToHex(b).substr(0, 1);
 			}
 		}
 	}
@@ -153,6 +196,17 @@ function rgbToHex(r, g, b) {
 	return hr + hg + hb;
 
 }
+
+
+
+/**
+ * Color Value to HEX
+ * 
+ * Converts an color value to its HEX version.
+ * 
+ * @param  c  the color value to convert
+ * return     the hex value
+ */
 		
 function componentToHex(c) {
 
@@ -234,6 +288,7 @@ function displayRecents() {
 		
 	}
 	
+	if (i > 0) savedTitle.classList.remove('hide');
 	savedColors.innerHTML = string;
 
 }
