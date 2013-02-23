@@ -13,7 +13,8 @@
 var hexInput    = document.getElementById('hex');
 var rgbInput    = document.getElementById('rgb');
 var preview     = document.getElementById('preview');
-var title       = document.getElementById('previewtitle');
+var pcolor      = document.getElementById('previewcolor');
+var ptitle      = document.getElementById('previewtitle');
 var saveBtn     = document.getElementById('save');
 var savedColors = document.getElementById('savedcolors');
 
@@ -70,8 +71,9 @@ function getRgbValue() {
 	
 		var rgbValues = hexToRgb(fullvalue);
 		rgbInput.value = rgbValues['r'] + ', ' + rgbValues['g'] + ', ' + rgbValues['b'];
-		preview.style.background = '#' + fullvalue;
-		title.innerHTML = '#' + value;
+		pcolor.style.background = '#' + fullvalue;
+		ptitle.innerHTML = '#' + value;
+		preview.className = '';
 		saveBtn.className = '';
 	
 	}
@@ -119,8 +121,9 @@ function getHexValue() {
 		
 		var hexValue = rgbToHex(parseInt(rgbArray[0]), parseInt(rgbArray[1]), parseInt(rgbArray[2]));
 		hexInput.value = hexValue;
-		preview.style.background = '#' + hexValue;
-		title.innerHTML = '#' + hexValue;
+		pcolor.style.background = '#' + hexValue;
+		ptitle.innerHTML = '#' + hexValue;
+		preview.className = '';
 		saveBtn.className = '';
 	
 	}
