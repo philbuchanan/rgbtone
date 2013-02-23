@@ -201,7 +201,6 @@ function retrieveColors() {
 	if (typeof Storage === 'undefined') return false;
 	
 	var s = localStorage.getItem('colors');
-	console.log(s);
 	
 	if (s !== null) colors = JSON.parse(s);
 	else colors = new Array();
