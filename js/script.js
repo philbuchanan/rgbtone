@@ -17,6 +17,11 @@ var title       = document.getElementById('previewtitle');
 var saveBtn     = document.getElementById('save');
 var savedColors = document.getElementById('savedcolors');
 
+var maxSave = 6;
+var colors  = [];
+
+var ajaxRequest;
+
 window.onload = init();
 
 
@@ -32,9 +37,14 @@ function init() {
 
 	hexInput.addEventListener('keyup', getRgbValue);
 	rgbInput.addEventListener('keyup', getHexValue);
+	hexInput.addEventListener('click', function() {hexInput.select()});
+	rgbInput.addEventListener('click', function() {rgbInput.select()});
 	saveBtn.addEventListener('click', save);
 	
-	displayRecents();
+	if (retrieveColors()) {
+		ajaxRequest = ajaxRequest();
+		displayRecents();
+	}
 
 }
 
@@ -153,34 +163,60 @@ function componentToHex(c) {
 /**
  * Save Colour
  *
- * Saves the colour value to a cookie for later 
- * retrieval and display.
- * 
- * @param  value  the hex value string to convert
+ * Saves six color values (in a sinlge string) to
+ * local storage for later retrieval and display.
  */
 
 function save() {
 
 	var value  = hexInput.value;
-	var colors = localStorage.getItem('colors');
 	
-	if (colors !== null) var colors = JSON.parse(colors);
-	else var colors = new Array();
-	
-	if (colors.length > 5) colors.pop();
+	if (colors.length >= maxSave) colors.pop();
 	colors.unshift(value);
 	
 	localStorage.setItem('colors', JSON.stringify(colors));
+	
+	displayRecents();
 	saveColors(value);
-	//location.reload();
 
 }
 
 
 
+/**
+ * Retrieve Colours
+ *
+ * Retrieves any saved colors from local storage
+ * and puts them into the colors array or creates
+ * a new array if no colors are saved.
+ * 
+ * return  false if local storage isn't supported, else true
+ */
+
+function retrieveColors() {
+
+	if (typeof Storage === 'undefined') return false;
+	
+	var s = localStorage.getItem('colors');
+	console.log(s);
+	
+	if (s !== null) colors = JSON.parse(s);
+	else colors = new Array();
+	
+	return true;
+
+}
+
+
+
+/**
+ * Display Recent Colors
+ * 
+ * Displays all saved colors.
+ */
+
 function displayRecents() {
 
-	var colors = JSON.parse(localStorage.getItem('colors'));
 	var string = '';
 	
 	for (var i = 0; i < colors.length; i++) {
@@ -204,48 +240,31 @@ function displayRecents() {
 
 
 
-/* AJAX Stuff */
+/**
+ * New Ajax Request
+ * 
+ * Creates a new Ajax object.
+ */
 
 function ajaxRequest() {
 
-	var activexmodes = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP'];
-	
-	// IE
-	if (window.ActiveXObject) {
-		for (var i = 0; i < activexmodes.length; i++) {
-			try {
-				return new ActiveXObject(activexmodes[i])
-			}
-			catch(e) {}
-		}
-	}
-	// If Mozilla, Safari etc
-	else if (window.XMLHttpRequest) {
-		return new XMLHttpRequest();
-	}
-	else {
-		return false;
-	}
+	if (window.XMLHttpRequest) return new XMLHttpRequest();
+	else return false;
 
 }
 
-function saveColors(value) {
 
-	ajaxRequest = ajaxRequest();
-	ajaxRequest.onreadystatechange = function() {
-		if (ajaxRequest.readyState == 4){
-			if (ajaxRequest.status == 200 || window.location.href.indexOf('http') == -1) {
-				// Success
-				//document.getElementById("result").innerHTML = ajaxRequest.responseText
-			}
-			else {
-				// Error
-			}
-		}
-	}
+
+/**
+ * Save Colors to Server
+ * 
+ * Uses the existing Ajax object to save the new
+ * color to the global colors.txt file on the server.
+ */
+
+function saveColors(value) {
 	
 	ajaxRequest.open('GET', 'colors/colors.php?color=' + value, true);
 	ajaxRequest.send(null);
 
 }
-
