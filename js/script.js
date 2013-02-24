@@ -63,7 +63,6 @@ function getRgbValue() {
 
 	var value = hexInput.value;
 	value = value.replace('#', '');
-	console.log(value);
 	
 	if (value.length === 3) {
 		var r = value.substr(0, 1);
@@ -82,12 +81,12 @@ function getRgbValue() {
 			rgbInput.value = rgbValues['r'] + ', ' + rgbValues['g'] + ', ' + rgbValues['b'];
 			pcolor.style.background = '#' + hexValue;
 			ptitle.innerHTML = '#' + value;
-			preview.classList.remove('hide');
+			preview.classList.remove('transparent');
 		}
 	
 	}
 	else {
-		preview.classList.add('hide');
+		preview.classList.add('transparent');
 	}
 
 }
@@ -138,12 +137,12 @@ function getHexValue() {
 		hexInput.value = hexValue;
 		pcolor.style.background = '#' + hexValue;
 		ptitle.innerHTML = '#' + hexValue;
-		preview.classList.remove('hide');
+		preview.classList.remove('transparent');
 	
 	}
 	else {
 	
-		preview.classList.add('hide');
+		preview.classList.add('transparent');
 	
 	}
 	
