@@ -78,36 +78,50 @@ h2 {
 	}
 }
 p {line-height: 20px;}
+strong {font-weight: bold;}
 hr {
 	border-top: 1px dashed #aaa;
 	margin: 24px 0 30px;
 }
 
 
-/* BASIC STRUCTURE
+/* STRUCTURE
    ---------------------------------- */
 
 .container {
-	width: 638px;
-	margin: 36px auto;
-	border: 1px solid #ccc;
-	.rounded(6px);
+	width: 660px;
+	margin: 75px auto 36px;
 }
-.header {
+header {
 	background: white;
-	padding: 28px 36px 30px;
+	padding: 28px 36px 43px;
 	position: relative;
-	.border-radius(6px,6px,0,0);
+	border: 1px solid #ccc;
+	.border-radius(6px, 6px, 0, 0);
 }
-.controls {
+section {
 	background: #f5f5f5;
-	border-top: 1px solid #ccc;
-	padding: 28px 36px 38px;
+	border: 1px solid #ccc;
+	border-top: none;
+	padding: 33px 34px 38px;
+	overflow: auto;
 	.border-radius(0, 0, 6px, 6px);
+	.help-text {
+		color: #5D6670;
+		font-size: 12px;
+		text-shadow: 0px 1px 1px white;
+		margin: 10px 0 0 2px;
+	}
 }
+.half {
+	float: left;
+	width: 278px;
+	margin-right: 34px;
+}
+.last {margin-right: 0 !important;}
 
 
-/* PRIMARY STYLES
+/* INPUTS
    ---------------------------------- */
 
 label {
@@ -117,31 +131,31 @@ label {
 	font-size: 20px;
 	font-weight: bold;
 	text-shadow: 0px 1px 1px white;
-	margin-bottom: 10px;
+	margin: 0 0 10px 2px;
 }
 input {
 	color: #444;
 	font-size: 36px;
 	display: inline;
 	font-family: sans-serif;
-	width: 284px;
-	margin-left: -2px;
+	width: 262px;
 	padding: 6px;
 	border: 2px solid #CCC;
-	.rounded(6px);
 	-webkit-appearance: none;
+	.rounded(6px);
 	&:focus {outline: none;}
 }
-.help-text {
-	color: #5D6670;
-	font-size: 12px;
-	text-shadow: 0px 1px 1px white;
-	margin: 10px 0 0;
-}
+
+
+/* LARGE PREVIEW CHIP
+   ---------------------------------- */
+
 .preview, .recent-preview {
 	position: absolute;
 	right: 34px;
-	top: 38px;
+	top: -40px;
+	width: 160px;
+	height: 202px;
 	opacity: 1;
 	.rounded(6px);
 	.box-shadow(0px 1px 3px rgba(0, 0, 0, 0.3));
@@ -151,7 +165,7 @@ input {
 		width: 160px;
 		.border-radius(6px, 6px, 0, 0);
 	}
-	.text-area {
+	.chip-info {
 		background: white;
 		padding: 4px 6px 5px;
 		padding: 8px;
@@ -159,40 +173,55 @@ input {
 		p {
 			font-size: 14px;
 			line-height: 18px;
-			&.label {font-weight: bold;}
-			#save {
-				float: right;
-				color: #000;
-				font-size: 11px;
-				font-weight: normal;
-				text-transform: uppercase;
-				text-decoration: none;
-				margin-top: 2px;
-				cursor: pointer;
-				&:hover {text-decoration: underline;}
-			}
 		}
 	}
+	.save {
+		color: #000;
+		background: rgba(255, 255, 255, 0.6);
+		position: relative;
+		top: -202px;
+		font-size: 14px;
+		width: 160px;
+		height: 82px;
+		padding-top: 68px;
+		text-align: center;
+		font-weight: normal;
+		text-decoration: none;
+		text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+		opacity: 0;
+		.border-radius(6px, 6px, 0, 0);
+		.transition(opacity 0.2s ease);
+	}
 }
+.preview:hover {
+	.save {opacity: 1;}
+}
+.cursor {cursor: pointer;}
 .transparent {opacity: 0;}
+
+
+/* SMALL PREVIEW CHIPS
+   ---------------------------------- */
+
 .hide {display: none;}
 .colors {
-	width: 638px;
+	width: 660px;
 	margin: 0 auto 36px;
 }
 .recent-preview {
 	position: inherit;
 	float: left;
-	margin: 0 16px 36px 0;
+	width: 95px;
+	height: 135px;
+	margin: 0 18px 36px 0;
 	.color-area {
 		height: 87px;
-		width: 93px;
+		width: 95px;
 	}
-	.text-area {
+	.chip-info {
 		p {
 			font-size: 12px;
 			line-height: 16px;
 		}
 	}
 }
-.last {margin-right: 0;}

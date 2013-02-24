@@ -10,12 +10,13 @@
 
 
 
+var color; // Always a valid hex value
+
 var hexInput    = document.getElementById('hex');
 var rgbInput    = document.getElementById('rgb');
 var preview     = document.getElementById('preview');
 var pcolor      = document.getElementById('previewcolor');
 var ptitle      = document.getElementById('previewtitle');
-var saveBtn     = document.getElementById('save');
 var savedTitle  = document.getElementById('savedtitle');
 var savedColors = document.getElementById('savedcolors');
 
@@ -41,7 +42,6 @@ function init() {
 	rgbInput.addEventListener('keyup', getHexValue);
 	hexInput.addEventListener('click', function() {hexInput.select()});
 	rgbInput.addEventListener('click', function() {rgbInput.select()});
-	saveBtn.addEventListener('click', save);
 	
 	if (retrieveColors()) {
 		ajaxRequest = ajaxRequest();
@@ -78,15 +78,22 @@ function getRgbValue() {
 	
 		var rgbValues = hexToRgb(hexValue);
 		if (rgbValues) {
+			color = value;
 			rgbInput.value = rgbValues['r'] + ', ' + rgbValues['g'] + ', ' + rgbValues['b'];
 			pcolor.style.background = '#' + hexValue;
 			ptitle.innerHTML = '#' + value;
 			preview.classList.remove('transparent');
+			preview.classList.add('cursor');
+			preview.addEventListener('click', save);
 		}
 	
 	}
 	else {
+	
+		color = null;
 		preview.classList.add('transparent');
+		preview.classList.remove('cursor');
+	
 	}
 
 }
@@ -134,15 +141,20 @@ function getHexValue() {
 	if (r !== false && g !== false && b !== false) {
 		
 		var hexValue = rgbToHex(r, g, b);
+		color = value;
 		hexInput.value = hexValue;
 		pcolor.style.background = '#' + hexValue;
 		ptitle.innerHTML = '#' + hexValue;
 		preview.classList.remove('transparent');
+		preview.classList.add('cursor');
+		preview.addEventListener('click', save);
 	
 	}
 	else {
 	
+		color = null;
 		preview.classList.add('transparent');
+		preview.classList.remove('cursor');
 	
 	}
 	
@@ -227,15 +239,17 @@ function componentToHex(c) {
 
 function save() {
 
-	var value  = hexInput.value;
+	if (typeof color !== 'undefined' && color !== null) {
+		
+		if (colors.length >= maxSave) colors.pop();
+		colors.unshift(color);
+		
+		localStorage.setItem('colors', JSON.stringify(colors));
+		
+		displayRecents();
+		saveColors(color);
 	
-	if (colors.length >= maxSave) colors.pop();
-	colors.unshift(value);
-	
-	localStorage.setItem('colors', JSON.stringify(colors));
-	
-	displayRecents();
-	saveColors(value);
+	}
 
 }
 
@@ -282,9 +296,9 @@ function displayRecents() {
 		else var last = '';
 		string += '<div class="recent-preview' + last + '">';
 		string += '<div class="color-area" style="background: #' + colors[i] + '"></div>';
-		string += '<div class="text-area">';
-		string += '<p class="label">Preview</p>';
-		string += '<p class="value">#' + colors[i] + '</p>';
+		string += '<div class="chip-info">';
+		string += '<p><strong>Preview</strong></p>';
+		string += '<p>#' + colors[i] + '</p>';
 		string += '</div></div>';
 		
 	}
