@@ -62,6 +62,8 @@ function init() {
 function getRgbValue() {
 
 	var value = hexInput.value;
+	value = value.replace('#', '');
+	console.log(value);
 	
 	if (value.length === 3) {
 		var r = value.substr(0, 1);
@@ -123,7 +125,7 @@ function getHexValue() {
 
 	var value = rgbInput.value;
 	
-	value.replace(' ', '');
+	value = value.replace(' ', '');
 	var rgb = value.split(",", 3);
 	
 	var r = checkColorValue(rgb[0]);
