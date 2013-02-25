@@ -340,22 +340,22 @@ function displayRecents() {
 	
 	for (var i = 0; i < colors.length; i++) {
 	
+		var rgb = hexToRgb(colors[i]);
+		
 		if (i === 5) last = ' last';
 		string += '<div class="recent-preview' + last + '">';
 		string += '<div class="color-area" style="background: #' + colors[i] + '"></div>';
 		string += '<div class="chip-info">';
-		string += '<p><strong>Preview</strong></p>';
-		string += '<p>#' + colors[i] + '</p>';
+		string += '<p><strong>#' + colors[i] + '</strong></p>';
+		string += '<p>' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + '</p>';
 		string += '</div></div>';
-		
+	
 	}
 	
 	if (i > 0) savedTitle.classList.remove('hide');
 	savedColors.innerHTML = string;
 
 }
-
-
 
 
 
