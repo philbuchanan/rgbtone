@@ -23,6 +23,7 @@ var ptitle      = document.getElementById('previewtitle');
 var savedColors = document.getElementById('savedcolors');
 var savedTitle  = document.getElementById('savedtitle');
 var saveBtn     = document.getElementById('save');
+var resetBtn    = document.getElementById('reset');
 
 var ajaxRequest;
 
@@ -43,6 +44,7 @@ function init() {
 	rgbInput.addEventListener('keyup', getHexValue);
 	hexInput.addEventListener('click', function() {hexInput.select();});
 	rgbInput.addEventListener('click', function() {rgbInput.select();});
+	resetBtn.addEventListener('click', reset);
 	
 	if (retrieveColors()) {
 		ajaxRequest = ajaxRequest();
@@ -50,6 +52,24 @@ function init() {
 	}
 	
 	hexInput.focus();
+
+}
+
+
+
+/**
+ * Reset
+ * 
+ * Removes all local storage data and refreshes
+ * the window.
+ */
+
+function reset() {
+
+	if (confirm('Are you sure you want to remove all saved colors?')) {
+		localStorage.clear();
+		location.reload();
+	}
 
 }
 
@@ -64,20 +84,13 @@ function init() {
 
 function getRgbValue() {
 
+	var rgb;
 	var value = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hexInput.value.replace(/#/g, ''));
 	
 	if (value) {
 	
 		color = value[0];
-		
-		var rgb = hexToRgb(color);
-		if (color.length === 3) {
-			var r = color[0] + color[0];
-			var g = color[1] + color[1];
-			var b = color[2] + color[2];
-			rgb = hexToRgb(r + g + b);
-		}
-		
+		rgb = hexToRgb(color);
 		rgbInput.value = rgb.r + ', ' + rgb.g + ', ' + rgb.b;
 		showSwatch();
 	
@@ -97,12 +110,16 @@ function getRgbValue() {
 /**
  * HEX to RGB Converter
  * 
- * @param  hex  the HEX code to convert
+ * @param  hex  the HEX code to convert (shorthand accepted)
  * return  array of RGB values
  */
 
 function hexToRgb(hex) {
 
+	if (hex.length === 3) {
+		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+	}
+	
 	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result ? {
 		r: parseInt(result[1], 16),
@@ -123,18 +140,19 @@ function hexToRgb(hex) {
 
 function getHexValue() {
 
+	var rgb, r, g, b, hexValue;
 	var value = rgbInput.value;
 	
 	value = value.replace(' ', '');
-	var rgb = value.split(",", 3);
+	rgb = value.split(",", 3);
 	
-	var r = checkColorValue(rgb[0]);
-	var g = checkColorValue(rgb[1]);
-	var b = checkColorValue(rgb[2]);
+	r = checkColorValue(rgb[0]);
+	g = checkColorValue(rgb[1]);
+	b = checkColorValue(rgb[2]);
 	
 	if (r !== false && g !== false && b !== false) {
 		
-		var hexValue = rgbToHex(r, g, b);
+		hexValue = rgbToHex(r, g, b);
 		color = hexValue;
 		hexInput.value = hexValue;
 		showSwatch();
@@ -181,10 +199,12 @@ function checkColorValue(n) {
  */
 
 function rgbToHex(r, g, b) {
+
+	var hr, hg, hb;
 	
-	var hr = componentToHex(r);
-	var hg = componentToHex(g);
-	var hb = componentToHex(b);
+	hr = componentToHex(r);
+	hg = componentToHex(g);
+	hb = componentToHex(b);
 	
 	if (hr.substr(0, 1) === hr.substr(1, 1)) {
 		if (hg.substr(0, 1) === hg.substr(1, 1)) {
@@ -335,12 +355,12 @@ function retrieveColors() {
 
 function displayRecents() {
 
-	var string = '';
-	var last = '';
+	var string = last = '';
+	var rgb = [];
 	
 	for (var i = 0; i < colors.length; i++) {
 	
-		var rgb = hexToRgb(colors[i]);
+		rgb = hexToRgb(colors[i]);
 		
 		if (i === 5) last = ' last';
 		string += '<div class="recent-preview' + last + '">';

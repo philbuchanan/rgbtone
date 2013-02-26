@@ -206,6 +206,7 @@ input {
 .colors {
 	width: 660px;
 	margin: 0 auto 36px;
+	&:hover #reset {color: #5d6670;}
 }
 .recent-preview {
 	position: inherit;
@@ -223,4 +224,12 @@ input {
 			line-height: 16px;
 		}
 	}
+}
+#reset {
+	color: #fff;
+	font-size: 11px;
+	margin-left: 20px;
+	cursor: pointer;
+	.transition(color 0.2s ease);
+	&:hover {text-decoration: underline;}
 }
