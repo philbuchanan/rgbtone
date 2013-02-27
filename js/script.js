@@ -13,7 +13,8 @@
 var color  = null;
 var colors = [];
 
-var maxSave = 6;
+var maxSave  = 6;
+var globSave = true;
 
 var hexInput    = document.getElementById('hex');
 var rgbInput    = document.getElementById('rgb');
@@ -46,10 +47,9 @@ function init() {
 	rgbInput.addEventListener('click', function() {rgbInput.select();});
 	resetBtn.addEventListener('click', reset);
 	
-	if (retrieveColors()) {
-		ajaxRequest = ajaxRequest();
-		displayRecents();
-	}
+	retrieveColors();
+	displayRecents();
+	if (globSave) ajaxRequest = ajaxRequest();
 	
 	hexInput.focus();
 
@@ -293,7 +293,7 @@ function save() {
 		localStorage.setItem('colors', JSON.stringify(colors));
 		
 		displayRecents();
-		saveColors(color);
+		if (globSave) saveColors(color);
 		
 		preview.removeEventListener('click', save);
 		saveBtn.style.display = 'none';
@@ -330,18 +330,14 @@ function contains(arr, obj) {
  * Retrieves any saved colors from local storage
  * and puts them into the colors array or creates
  * a new array if no colors are saved.
- * 
- * return  false if local storage isn't supported, else true
  */
 
 function retrieveColors() {
-	
+
 	var s = localStorage.getItem('colors');
 	
 	if (s !== null) colors = JSON.parse(s);
 	else colors = [];
-	
-	return true;
 
 }
 
