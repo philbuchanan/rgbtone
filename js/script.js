@@ -10,8 +10,9 @@
 
 
 
-var color  = null;
 var colors = [];
+var hex    = null;
+var rgb    = [];
 
 var maxSave  = 6;
 var globSave = true;
@@ -47,29 +48,12 @@ function init() {
 	rgbInput.addEventListener('click', function() {rgbInput.select();});
 	resetBtn.addEventListener('click', reset);
 	
-	retrieveColors();
-	displayRecents();
+	if (getSavedColors()) {
+		displaySavedColors();
+	}
 	if (globSave) ajaxRequest = ajaxRequest();
 	
 	hexInput.focus();
-
-}
-
-
-
-/**
- * Reset
- * 
- * Removes all local storage data and refreshes
- * the window.
- */
-
-function reset() {
-
-	if (confirm('Are you sure you want to remove all saved colors?')) {
-		localStorage.clear();
-		location.reload();
-	}
 
 }
 
@@ -84,23 +68,17 @@ function reset() {
 
 function getRgbValue() {
 
-	var rgb;
-	var value = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hexInput.value.replace(/#/g, ''));
+	var valid = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hexInput.value.replace(/#/g, ''));
 	
-	if (value) {
-	
-		color = value[0];
-		rgb = hexToRgb(color);
+	if (valid) {
+		hex = valid[0];
+		rgb = hexToRgb(hex);
 		rgbInput.value = rgb.r + ', ' + rgb.g + ', ' + rgb.b;
 		showSwatch();
-	
 	}
 	else {
-	
-		color = null;
-		rgbInput.value = null;
+		hex = rgb = rgbInput.value = null;
 		hideSwatch();
-	
 	}
 
 }
@@ -114,13 +92,13 @@ function getRgbValue() {
  * return  array of RGB values
  */
 
-function hexToRgb(hex) {
+function hexToRgb(value) {
 
-	if (hex.length === 3) {
-		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+	if (value.length === 3) {
+		value = value[0] + value[0] + value[1] + value[1] + value[2] + value[2];
 	}
 	
-	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
 	return result ? {
 		r: parseInt(result[1], 16),
 		g: parseInt(result[2], 16),
@@ -140,30 +118,23 @@ function hexToRgb(hex) {
 
 function getHexValue() {
 
-	var rgb, r, g, b, hexValue;
-	var value = rgbInput.value;
+	var r, g, b;
+	var value = rgbInput.value.replace(/\s/g, '');
 	
-	value = value.replace(' ', '');
 	rgb = value.split(",", 3);
 	
-	r = checkColorValue(rgb[0]);
-	g = checkColorValue(rgb[1]);
-	b = checkColorValue(rgb[2]);
+	r = checkColor(rgb[0]);
+	g = checkColor(rgb[1]);
+	b = checkColor(rgb[2]);
 	
-	if (r !== false && g !== false && b !== false) {
-		
-		hexValue = rgbToHex(r, g, b);
-		color = hexValue;
-		hexInput.value = hexValue;
+	if (r && g && b) {
+		hex = rgbToHex(r, g, b);
+		hexInput.value = hex;
 		showSwatch();
-	
 	}
 	else {
-	
-		color = null;
-		hexInput.value = null;
+		hex = rgb = hexInput.value = null;
 		hideSwatch();
-	
 	}
 	
 }
@@ -172,18 +143,15 @@ function getHexValue() {
 
 /**
  * Check Color Value
- * 
- * @param  n  the number to check
- * return  returns the fixed number, or false if NaN
+ *
+ * Checks to ensure that a color value falls
+ * within the valid rgb value range (0-255).
  */
 
-function checkColorValue(n) {
+function checkColor(n) {
 
-	n = parseInt(Math.round(n), 10);
-	if (isNaN(n)) return false;
-	else if (n > 255) return 255;
-	else if (n < 0) return 0;
-	else return n;
+	var value = /^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/.test(n);
+	return value ? parseInt(n) : false;
 
 }
 
@@ -206,14 +174,10 @@ function rgbToHex(r, g, b) {
 	hg = componentToHex(g);
 	hb = componentToHex(b);
 	
-	if (hr.substr(0, 1) === hr.substr(1, 1)) {
-		if (hg.substr(0, 1) === hg.substr(1, 1)) {
-			if (hb.substr(0, 1) === hb.substr(1, 1)) {
-				hr = componentToHex(r).substr(0, 1);
-				hg = componentToHex(g).substr(0, 1);
-				hb = componentToHex(b).substr(0, 1);
-			}
-		}
+	if (hr[0] === hr[1] && hg[0] === hg[1] && hb[0] === hb[1]) {
+		hr = hr[0];
+		hg = hg[0];
+		hb = hb[0];
 	}
 	
 	return hr + hg + hb;
@@ -233,8 +197,8 @@ function rgbToHex(r, g, b) {
 		
 function componentToHex(c) {
 
-	var hex = c.toString(16);
-	return hex.length === 1 ? "0" + hex : hex;
+	var h = c.toString(16);
+	return h.length === 1 ? "0" + h : h;
 
 }
 
@@ -246,16 +210,18 @@ function componentToHex(c) {
 
 function showSwatch() {
 
-	if (!contains(colors, color)) {
+	if (!contains(colors, hex)) {
 		preview.addEventListener('click', save);
 		preview.style.cursor = 'pointer';
 		saveBtn.style.display = 'block';
 	}
 	else {
+		preview.removeEventListener('click', save);
+		preview.style.cursor = 'default';
 		saveBtn.style.display = 'none';
 	}
-	pcolor.style.background = '#' + color;
-	ptitle.innerHTML = '#' + color;
+	pcolor.style.background = '#' + hex;
+	ptitle.innerHTML = '#' + hex;
 	preview.classList.remove('transparent');
 
 }
@@ -277,39 +243,10 @@ function hideSwatch() {
 
 
 /**
- * Save Colour
- * 
- * Saves six color values (in a single string) to
- * local storage for later retrieval and display.
- */
-
-function save() {
-
-	if (color !== null) {
-	
-		if (colors.length >= maxSave) colors.pop();
-		colors.unshift(color);
-		
-		localStorage.setItem('colors', JSON.stringify(colors));
-		
-		displayRecents();
-		if (globSave) saveColors(color);
-		
-		preview.removeEventListener('click', save);
-		saveBtn.style.display = 'none';
-		preview.style.cursor = 'default';
-	
-	}
-
-}
-
-
-
-/**
  * Array Contains
  * 
- * Returns true if the given array contains the 
- * object, else false.
+ * Helper function that returns true if the given
+ * array contains the object, else false.
  */
 
 function contains(arr, obj) {
@@ -325,51 +262,102 @@ function contains(arr, obj) {
 
 
 /**
- * Retrieve Colours
- *
- * Retrieves any saved colors from local storage
- * and puts them into the colors array or creates
- * a new array if no colors are saved.
+ * Save Colour
+ * 
+ * Saves six color values (in a single string) to
+ * local storage for later retrieval and display.
  */
 
-function retrieveColors() {
+function save() {
 
-	var s = localStorage.getItem('colors');
+	if (hex !== null) {
 	
-	if (s !== null) colors = JSON.parse(s);
-	else colors = [];
+		if (colors.length >= maxSave) colors.pop();
+		colors.unshift(hex);
+		
+		localStorage.setItem('colors', JSON.stringify(colors));
+		
+		displaySavedColors();
+		if (globSave) saveColors(hex);
+		
+		preview.removeEventListener('click', save);
+		saveBtn.style.display = 'none';
+		preview.style.cursor = 'default';
+	
+	}
 
 }
 
 
 
 /**
- * Display Recent Colors
- * 
- * Displays all saved colors.
+ * Retrieve Saved Colours
+ *
+ * Retrieves any saved colors from local storage
+ * and puts them into the colors array. Returns
+ * true if there are saved colors, else false.
  */
 
-function displayRecents() {
+function getSavedColors() {
 
-	var string = last = '';
-	var rgb = [];
+	var s = localStorage.getItem('colors');
+	
+	if (s !== null) {
+		colors = JSON.parse(s);
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+
+
+/**
+ * Display Saved Colors
+ */
+
+function displaySavedColors() {
+
+	var string = '';
+	var savedRgb = [];
 	
 	for (var i = 0; i < colors.length; i++) {
 	
-		rgb = hexToRgb(colors[i]);
+		savedRgb = hexToRgb(colors[i]);
 		
-		if (i === 5) last = ' last';
+		if (i === 5) var last = ' last';
+		else var last = '';
 		string += '<div class="recent-preview' + last + '">';
 		string += '<div class="color-area" style="background: #' + colors[i] + '"></div>';
 		string += '<div class="chip-info">';
 		string += '<p><strong>#' + colors[i] + '</strong></p>';
-		string += '<p>' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + '</p>';
+		string += '<p>' + savedRgb.r + ', ' + savedRgb.g + ', ' + savedRgb.b + '</p>';
 		string += '</div></div>';
 	
 	}
 	
 	if (i > 0) savedTitle.classList.remove('hide');
 	savedColors.innerHTML = string;
+
+}
+
+
+
+/**
+ * Reset Saved Colors
+ * 
+ * Removes all local storage data and refreshes
+ * the window.
+ */
+
+function reset() {
+
+	if (confirm('Are you sure you want to remove all saved colors?')) {
+		localStorage.clear();
+		location.reload();
+	}
 
 }
 
