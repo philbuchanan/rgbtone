@@ -10,12 +10,14 @@
 
 
 
+// Settings
+var maxSave  = 6;
+var globSave = false;
+
+// Colors
 var colors = [];
 var hex    = null;
-var rgb    = [];
-
-var maxSave  = 6;
-var globSave = true;
+var rgb    = null;
 
 var hexInput    = document.getElementById('hex');
 var rgbInput    = document.getElementById('rgb');
@@ -327,8 +329,10 @@ function displaySavedColors() {
 	
 		savedRgb = hexToRgb(colors[i]);
 		
-		if (i === 5) var last = ' last';
+		if (i === maxSave) break;
+		if ((i + 1) % 6 === 0) var last = ' last';
 		else var last = '';
+		
 		string += '<div class="recent-preview' + last + '">';
 		string += '<div class="color-area" style="background: #' + colors[i] + '"></div>';
 		string += '<div class="chip-info">';
