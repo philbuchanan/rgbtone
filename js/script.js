@@ -43,7 +43,8 @@ window.onload = init();
  */
 
 function init() {
-
+	'use strict';
+	
 	hexInput.addEventListener('keyup', getRgbValue);
 	rgbInput.addEventListener('keyup', getHexValue);
 	hexInput.addEventListener('click', function() {hexInput.select();});
@@ -53,7 +54,7 @@ function init() {
 	if (getSavedColors()) {
 		displaySavedColors();
 	}
-	if (globSave) ajaxRequest = ajaxRequest();
+	if (globSave) {ajaxRequest = ajaxRequest();}
 	
 	hexInput.focus();
 
@@ -69,7 +70,8 @@ function init() {
  */
 
 function getRgbValue() {
-
+	'use strict';
+	
 	var valid = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hexInput.value.replace(/#/g, ''));
 	
 	if (valid) {
@@ -95,12 +97,15 @@ function getRgbValue() {
  */
 
 function hexToRgb(value) {
-
+	'use strict';
+	
+	var result;
+	
 	if (value.length === 3) {
 		value = value[0] + value[0] + value[1] + value[1] + value[2] + value[2];
 	}
 	
-	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
+	result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
 	return result ? {
 		r: parseInt(result[1], 16),
 		g: parseInt(result[2], 16),
@@ -119,9 +124,10 @@ function hexToRgb(value) {
  */
 
 function getHexValue() {
-
-	var r, g, b;
-	var value = rgbInput.value.replace(/\s/g, '');
+	'use strict';
+	
+	var r, g, b, value;
+	value = rgbInput.value.replace(/\s/g, '');
 	
 	rgb = value.split(",", 3);
 	
@@ -151,9 +157,10 @@ function getHexValue() {
  */
 
 function checkColor(n) {
-
+	'use strict';
+	
 	var value = /^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/.test(n);
-	return value ? parseInt(n) : false;
+	return value ? parseInt(n, 10) : false;
 
 }
 
@@ -169,7 +176,8 @@ function checkColor(n) {
  */
 
 function rgbToHex(r, g, b) {
-
+	'use strict';
+	
 	var hr, hg, hb;
 	
 	hr = componentToHex(r);
@@ -198,7 +206,8 @@ function rgbToHex(r, g, b) {
  */
 		
 function componentToHex(c) {
-
+	'use strict';
+	
 	var h = c.toString(16);
 	return h.length === 1 ? "0" + h : h;
 
@@ -211,7 +220,8 @@ function componentToHex(c) {
  */
 
 function showSwatch() {
-
+	'use strict';
+	
 	if (!contains(colors, hex)) {
 		preview.addEventListener('click', save);
 		preview.style.cursor = 'pointer';
@@ -235,7 +245,8 @@ function showSwatch() {
  */
 
 function hideSwatch() {
-
+	'use strict';
+	
 	preview.removeEventListener('click', save);
 	preview.classList.add('transparent');
 	preview.removeAttribute('style');
@@ -252,10 +263,11 @@ function hideSwatch() {
  */
 
 function contains(arr, obj) {
-
+	'use strict';
+	
 	var i = arr.length;
 	while (i--) {
-		if (arr[i] === obj) return true;
+		if (arr[i] === obj) {return true;}
 	}
 	return false;
 
@@ -271,16 +283,17 @@ function contains(arr, obj) {
  */
 
 function save() {
-
+	'use strict';
+	
 	if (hex !== null) {
 	
-		if (colors.length >= maxSave) colors.pop();
+		if (colors.length >= maxSave) {colors.pop();}
 		colors.unshift(hex);
 		
 		localStorage.setItem('colors', JSON.stringify(colors));
 		
 		displaySavedColors();
-		if (globSave) saveColors(hex);
+		if (globSave) {saveColors(hex);}
 		
 		preview.removeEventListener('click', save);
 		saveBtn.style.display = 'none';
@@ -301,16 +314,15 @@ function save() {
  */
 
 function getSavedColors() {
-
+	'use strict';
+	
 	var s = localStorage.getItem('colors');
 	
 	if (s !== null) {
 		colors = JSON.parse(s);
 		return true;
 	}
-	else {
-		return false;
-	}
+	return false;
 
 }
 
@@ -321,17 +333,20 @@ function getSavedColors() {
  */
 
 function displaySavedColors() {
-
-	var string = '';
-	var savedRgb = [];
+	'use strict';
 	
-	for (var i = 0; i < colors.length; i++) {
+	var string, savedRgb, last, i;
+	
+	string = '';
+	savedRgb = [];
+	
+	for (i = 0; i < colors.length; i++) {
 	
 		savedRgb = hexToRgb(colors[i]);
 		
-		if (i === maxSave) break;
-		if ((i + 1) % 6 === 0) var last = ' last';
-		else var last = '';
+		if (i === maxSave) {break;}
+		if ((i + 1) % 6 === 0) {last = ' last';}
+		else {last = '';}
 		
 		string += '<div class="recent-preview' + last + '">';
 		string += '<div class="color-area" style="background: #' + colors[i] + '"></div>';
@@ -342,7 +357,7 @@ function displaySavedColors() {
 	
 	}
 	
-	if (i > 0) savedTitle.classList.remove('hide');
+	if (i > 0) {savedTitle.classList.remove('hide');}
 	savedColors.innerHTML = string;
 
 }
@@ -357,7 +372,8 @@ function displaySavedColors() {
  */
 
 function reset() {
-
+	'use strict';
+	
 	if (confirm('Are you sure you want to remove all saved colors?')) {
 		localStorage.clear();
 		location.reload();
@@ -374,9 +390,10 @@ function reset() {
  */
 
 function ajaxRequest() {
-
-	if (window.XMLHttpRequest) return new XMLHttpRequest();
-	else return false;
+	'use strict';
+	
+	if (window.XMLHttpRequest) {return new XMLHttpRequest();}
+	return false;
 
 }
 
@@ -390,6 +407,7 @@ function ajaxRequest() {
  */
 
 function saveColors(value) {
+	'use strict';
 	
 	ajaxRequest.open('GET', 'colors/colors.php?color=' + value, true);
 	ajaxRequest.send(null);
