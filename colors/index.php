@@ -4,6 +4,8 @@
 	<meta charset="utf-8" />
 	<title>Colours</title>
 	
+	<link rel="shortcut icon" href="../assets/favicon.ico"/>
+	
 	<style type="text/css">
 		html, body, div {
 			margin: 0;
@@ -21,7 +23,7 @@
 <?php
 
 $colors = file_get_contents("colors.txt");
-$colors_arr = array_reverse(explode(', ', $colors));
+$colors_arr = array_reverse(explode(',', $colors));
 
 foreach ($colors_arr as $color) {
 	?>

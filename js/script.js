@@ -1,415 +1,397 @@
-/**
- * Copyright 2011 Phil Buchanan
- * 
- * RGBTONE is a simple HEX to RGB (and vise versa)
- * color converting app. It also allows you to
- * save colors for later using local storage.
- * 
- * @version 2.1
- */
+// Copyright 2011-2013 Phil Buchanan
+//
+// RGBTONE is a simple HEX to RGB (and vise versa)
+// color converting app. It also allows you to
+// save colors for later using local storage.
+// 
+// @version 2.2
 
 
 
-// Settings
-var maxSave  = 6;
-var globSave = false;
-
-// Colors
-var colors = [];
-var hex    = null;
-var rgb    = null;
-
-var hexInput    = document.getElementById('hex');
-var rgbInput    = document.getElementById('rgb');
-var preview     = document.getElementById('preview');
-var pcolor      = document.getElementById('previewcolor');
-var ptitle      = document.getElementById('previewtitle');
-var savedColors = document.getElementById('savedcolors');
-var savedTitle  = document.getElementById('savedtitle');
-var saveBtn     = document.getElementById('save');
-var resetBtn    = document.getElementById('reset');
-
-var ajaxRequest;
-
-window.onload = init();
-
-
-
-/**
- * Initialization
- * 
- * Creates event listeners and displays recent
- * saved colors.
- */
-
-function init() {
+(function() {
 	'use strict';
 	
-	hexInput.addEventListener('keyup', getRgbValue);
-	rgbInput.addEventListener('keyup', getHexValue);
-	hexInput.addEventListener('click', function() {hexInput.select();});
-	rgbInput.addEventListener('click', function() {rgbInput.select();});
-	resetBtn.addEventListener('click', reset);
+	var colors = {
+		valid: false,
+		hex: '',
+		rgb: {},
+		saved: []
+	},
 	
-	if (getSavedColors()) {
+	settings = {
+		maxSave: 6,
+		globSave: false
+	},
+	
+	hexInput    = document.getElementById('hex'),
+	rgbInput    = document.getElementById('rgb'),
+	preview     = document.getElementById('preview'),
+	pcolor      = document.getElementById('previewcolor'),
+	ptitle      = document.getElementById('previewtitle'),
+	savedColors = document.getElementById('savedcolors'),
+	savedTitle  = document.getElementById('savedtitle'),
+	saveBtn     = document.getElementById('save'),
+	resetBtn    = document.getElementById('reset'),
+	
+	
+	
+	// Initialization
+	//
+	// Creates event listeners and displays recent
+	// saved colors
+	
+	init = function() {
+	
+		hexInput.addEventListener('keyup', getRgbValue);
+		rgbInput.addEventListener('keyup', getHexValue);
+		hexInput.addEventListener('click', function() {hexInput.select();});
+		rgbInput.addEventListener('click', function() {rgbInput.select();});
+		resetBtn.addEventListener('click', reset);
+		
+		getSavedColors();
 		displaySavedColors();
-	}
-	if (globSave) {ajaxRequest = ajaxRequest();}
 	
-	hexInput.focus();
-
-}
-
-
-
-/**
- * Get RGB Value
- * 
- * Gets the RGB string for a given HEX value and
- * prints it to the RGB input.
- */
-
-function getRgbValue() {
-	'use strict';
+	},
 	
-	var valid = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hexInput.value.replace(/#/g, ''));
 	
-	if (valid) {
-		hex = valid[0];
-		rgb = hexToRgb(hex);
-		rgbInput.value = rgb.r + ', ' + rgb.g + ', ' + rgb.b;
-		showSwatch();
-	}
-	else {
-		hex = rgb = rgbInput.value = null;
-		hideSwatch();
-	}
-
-}
-
-
-
-/**
- * HEX to RGB Converter
- * 
- * @param  hex  the HEX code to convert (shorthand accepted)
- * return  array of RGB values
- */
-
-function hexToRgb(value) {
-	'use strict';
 	
-	var result;
+	// Array Contains
+	//
+	// Helper function that returns true if the given
+	// array contains the object, else false.
 	
-	if (value.length === 3) {
-		value = value[0] + value[0] + value[1] + value[1] + value[2] + value[2];
-	}
+	contains = function contains(arr, obj) {
 	
-	result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
-	return result ? {
-		r: parseInt(result[1], 16),
-		g: parseInt(result[2], 16),
-		b: parseInt(result[3], 16)
-	} : null;
+		var i = 0;
+		while (i < arr.length) {
+			if (arr[i] === obj) {return true;}
+			i += 1;
+		}
+		return false;
 	
-}
-
-
-
-/**
- * Get HEX Value
- * 
- * Gets the HEX value for a given RGB string and
- * prints it to the HEX input.
- */
-
-function getHexValue() {
-	'use strict';
+	},
 	
-	var r, g, b, value;
-	value = rgbInput.value.replace(/\s/g, '');
 	
-	rgb = value.split(",", 3);
 	
-	r = checkColor(rgb[0]);
-	g = checkColor(rgb[1]);
-	b = checkColor(rgb[2]);
+	// Update App Display
+	//
+	// Updates all aspects of the app display
+	// including input fields and color chips.
+	//
+	// @param  mode  the mode that needs to be updated (HEX or RGB)
 	
-	if (r && g && b) {
-		hex = rgbToHex(r, g, b);
-		hexInput.value = hex;
-		showSwatch();
-	}
-	else {
-		hex = rgb = hexInput.value = null;
-		hideSwatch();
-	}
+	updateApp = function(mode) {
 	
-}
-
-
-
-/**
- * Check Color Value
- *
- * Checks to ensure that a color value falls
- * within the valid rgb value range (0-255).
- */
-
-function checkColor(n) {
-	'use strict';
-	
-	var value = /^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/.test(n);
-	return value ? parseInt(n, 10) : false;
-
-}
-
-
-
-/**
- * RGB to HEX Converter
- * 
- * @param  r  the red value
- * @param  g  the green value
- * @param  b  the blue value
- * return  the HEX string
- */
-
-function rgbToHex(r, g, b) {
-	'use strict';
-	
-	var hr, hg, hb;
-	
-	hr = componentToHex(r);
-	hg = componentToHex(g);
-	hb = componentToHex(b);
-	
-	if (hr[0] === hr[1] && hg[0] === hg[1] && hb[0] === hb[1]) {
-		hr = hr[0];
-		hg = hg[0];
-		hb = hb[0];
-	}
-	
-	return hr + hg + hb;
-
-}
-
-
-
-/**
- * Color Value to HEX
- * 
- * Converts an color value to its HEX version.
- * 
- * @param  c  the color value to convert
- * return     the hex value
- */
+		if (colors.valid) {
 		
-function componentToHex(c) {
-	'use strict';
-	
-	var h = c.toString(16);
-	return h.length === 1 ? "0" + h : h;
-
-}
-
-
-
-/**
- * Display Color Swatch
- */
-
-function showSwatch() {
-	'use strict';
-	
-	if (!contains(colors, hex)) {
-		preview.addEventListener('click', save);
-		preview.style.cursor = 'pointer';
-		saveBtn.style.display = 'block';
-	}
-	else {
-		preview.removeEventListener('click', save);
-		preview.style.cursor = 'default';
-		saveBtn.style.display = 'none';
-	}
-	pcolor.style.background = '#' + hex;
-	ptitle.innerHTML = '#' + hex;
-	preview.classList.remove('transparent');
-
-}
-
-
-
-/**
- * Hide Color Swatch
- */
-
-function hideSwatch() {
-	'use strict';
-	
-	preview.removeEventListener('click', save);
-	preview.classList.add('transparent');
-	preview.removeAttribute('style');
-
-}
-
-
-
-/**
- * Array Contains
- * 
- * Helper function that returns true if the given
- * array contains the object, else false.
- */
-
-function contains(arr, obj) {
-	'use strict';
-	
-	var i = arr.length;
-	while (i--) {
-		if (arr[i] === obj) {return true;}
-	}
-	return false;
-
-}
-
-
-
-/**
- * Save Colour
- * 
- * Saves six color values (in a single string) to
- * local storage for later retrieval and display.
- */
-
-function save() {
-	'use strict';
-	
-	if (hex !== null) {
-	
-		if (colors.length >= maxSave) {colors.pop();}
-		colors.unshift(hex);
+			if (mode === 'hex') {
+				hexInput.value = colors.hex;
+			}
+			else if (mode === 'rgb') {
+				rgbInput.value = colors.rgb.r + ', ' + colors.rgb.g + ', ' + colors.rgb.b;
+			}
+			
+			showSaveBtn();
+			pcolor.style.background = '#' + colors.hex;
+			ptitle.innerHTML = '#' + colors.hex;
+			preview.classList.remove('transparent');
 		
-		localStorage.setItem('colors', JSON.stringify(colors));
+		}
+		else {
 		
-		displaySavedColors();
-		if (globSave) {saveColors(hex);}
+			hideSaveBtn();
+			preview.classList.add('transparent');
 		
+		}
+	
+	},
+	
+	
+	
+	// Get RGB Value
+	//
+	// Gets the RGB values for the HEX input string
+	// and calls to update the app display.
+	
+	getRgbValue = function() {
+	
+		colors.hex = hexInput.value.replace(/\s/g, '');
+		
+		if (colors.hex.match(/^([0-9a-f]{3}|[0-9a-f]{6})$/i)) {
+			colors.valid = true;
+			colors.rgb = hexToRgb(colors.hex);
+		}
+		else {
+			colors.valid = false;
+		}
+		updateApp('rgb');
+	
+	},
+	
+	
+	
+	// HEX to RGB Converter
+	//
+	// @param  hex     a valid HEX code to convert (shorthand accepted)
+	// return  object  an object of RGB values
+	
+	hexToRgb = function(hex) {
+	
+		if (hex.length === 3) {
+			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+		}
+		
+		return {
+			r: parseInt(hex.slice(0, 2), 16),
+			g: parseInt(hex.slice(2, 4), 16),
+			b: parseInt(hex.slice(4, 6), 16)
+		};
+	
+	},
+	
+	
+	
+	// Get HEX Value
+	//
+	// Gets the HEX value for the RGB input string
+	// and calls to update the app display.
+	
+	getHexValue = function() {
+	
+		var r, g, b, rgb;
+		
+		rgb = rgbInput.value.replace(/\s/g, '').split(',', 3);
+		
+		r = parseInt(rgb[0], 10);
+		g = parseInt(rgb[1], 10);
+		b = parseInt(rgb[2], 10);
+		
+		if (checkColor(r) && checkColor(g) && checkColor(b)) {
+			colors.hex = rgbToHex(r, g, b);
+			colors.valid = true;
+		}
+		else {
+			colors.valid = false;
+		}
+		updateApp('hex');
+	
+	},
+	
+	
+	
+	// Check Color Value
+	//
+	// Returns true if a color value falls within the
+	// valid color value range (0-255).
+	
+	checkColor = function(n) {
+	
+		return (/^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/.test(n)) ? true : false;
+	
+	},
+	
+	
+	
+	// RGB to HEX Converter
+	//
+	// @param  r       the red value
+	// @param  g       the green value
+	// @param  b       the blue value
+	// return  string  the HEX string
+	
+	rgbToHex = function(r, g, b) {
+	
+		var hr, hg, hb;
+		
+		hr = componentToHex(r);
+		hg = componentToHex(g);
+		hb = componentToHex(b);
+		
+		if (hr[0] === hr[1] && hg[0] === hg[1] && hb[0] === hb[1]) {
+			hr = hr[0];
+			hg = hg[0];
+			hb = hb[0];
+		}
+		return hr + hg + hb;
+	
+	},
+	
+	
+	
+	// Component Color Value to HEX
+	//
+	// Converts a single color value to HEX.
+	//
+	// @param  color   the color value to convert
+	// return  string  the HEX value string
+	
+	componentToHex = function(color) {
+	
+		var hex = color.toString(16);
+		return hex.length === 1 ? '0' + hex : hex;
+	
+	},
+	
+	
+	
+	// Save Colour
+	//
+	// Saves six color values (in a single string) to
+	// local storage for later retrieval and display.
+	
+	save = function() {
+	
+		if (colors.hex !== null) {
+		
+			while (colors.saved.length >= settings.maxSave) {
+				colors.saved.pop();
+			}
+			colors.saved.unshift(colors.hex);
+			
+			localStorage.setItem('colors', JSON.stringify(colors.saved));
+			
+			hideSaveBtn();
+			displaySavedColors();
+			if (settings.globSave) {saveColors(colors.hex);}
+		
+		}
+	
+	},
+	
+	
+	
+	// Hide Save Button
+	//
+	// Hides the save button that allows a color to
+	// be saved to local storage.
+	
+	hideSaveBtn = function() {
+	
 		preview.removeEventListener('click', save);
 		saveBtn.style.display = 'none';
 		preview.style.cursor = 'default';
 	
-	}
-
-}
-
-
-
-/**
- * Retrieve Saved Colours
- *
- * Retrieves any saved colors from local storage
- * and puts them into the colors array. Returns
- * true if there are saved colors, else false.
- */
-
-function getSavedColors() {
-	'use strict';
+	},
 	
-	var s = localStorage.getItem('colors');
 	
-	if (s !== null) {
-		colors = JSON.parse(s);
-		return true;
-	}
-	return false;
-
-}
-
-
-
-/**
- * Display Saved Colors
- */
-
-function displaySavedColors() {
-	'use strict';
 	
-	var string, savedRgb, last, i;
+	// Show Save Button
+	//
+	// Shows the save button that allows a color to
+	// be saved to local storage.
 	
-	string = '';
-	savedRgb = [];
+	showSaveBtn = function() {
 	
-	for (i = 0; i < colors.length; i++) {
+		if (!contains(colors.saved, colors.hex)) {
+			preview.addEventListener('click', save);
+			saveBtn.style.display = 'block';
+			preview.style.cursor = 'pointer';
+		}
 	
-		savedRgb = hexToRgb(colors[i]);
+	},
+	
+	
+	
+	// Retrieve Saved Colours
+	//
+	// Retrieves any saved colors from local storage
+	// and puts them into the colors.saved array.
+	// Returns true if there are saved colors,
+	// else false.
+	
+	getSavedColors = function() {
+	
+		var retrievedColors = localStorage.getItem('colors');
 		
-		if (i === maxSave) {break;}
-		if ((i + 1) % 6 === 0) {last = ' last';}
-		else {last = '';}
+		if (retrievedColors !== null) {
+			colors.saved = JSON.parse(retrievedColors);
+			return true;
+		}
+		return false;
+	
+	},
+	
+	
+	
+	// Display Saved Colors
+	
+	displaySavedColors = function() {
+	
+		var string = '',
+			savedRgb = [],
+			last,
+			i;
 		
-		string += '<div class="recent-preview' + last + '">';
-		string += '<div class="color-area" style="background: #' + colors[i] + '"></div>';
-		string += '<div class="chip-info">';
-		string += '<p><strong>#' + colors[i] + '</strong></p>';
-		string += '<p>' + savedRgb.r + ', ' + savedRgb.g + ', ' + savedRgb.b + '</p>';
-		string += '</div></div>';
+		for (i = 0; i < colors.saved.length; i += 1) {
+		
+			savedRgb = hexToRgb(colors.saved[i]);
+			
+			if (i === settings.maxSave) {break;}
+			if ((i + 1) % 6 === 0) {last = ' last';}
+			else {last = '';}
+			
+			string += '<div class="recent-preview' + last + '">';
+			string += '<div class="color-area" style="background: #' + colors.saved[i] + '"></div>';
+			string += '<div class="chip-info">';
+			string += '<p><strong>#' + colors.saved[i] + '</strong></p>';
+			string += '<p>' + savedRgb.r + ', ' + savedRgb.g + ', ' + savedRgb.b + '</p>';
+			string += '</div></div>';
+		
+		}
+		
+		if (i > 0) {savedTitle.classList.remove('hide');}
+		savedColors.innerHTML = string;
 	
-	}
+	},
 	
-	if (i > 0) {savedTitle.classList.remove('hide');}
-	savedColors.innerHTML = string;
-
-}
-
-
-
-/**
- * Reset Saved Colors
- * 
- * Removes all local storage data and refreshes
- * the window.
- */
-
-function reset() {
-	'use strict';
 	
-	if (confirm('Are you sure you want to remove all saved colors?')) {
-		localStorage.clear();
-		location.reload();
-	}
-
-}
-
-
-
-/**
- * New Ajax Request
- * 
- * Creates a new Ajax object.
- */
-
-function ajaxRequest() {
-	'use strict';
 	
-	if (window.XMLHttpRequest) {return new XMLHttpRequest();}
-	return false;
-
-}
-
-
-
-/**
- * Save Colors to Server
- * 
- * Uses the existing Ajax object to save the new
- * color to the global colors.txt file on the server.
- */
-
-function saveColors(value) {
-	'use strict';
+	// Reset Saved Colors
+	//
+	// Removes all local storage data and refreshes
+	// the window.
 	
-	ajaxRequest.open('GET', 'colors/colors.php?color=' + value, true);
-	ajaxRequest.send(null);
+	reset = function() {
+	
+		if (confirm('Are you sure you want to remove all saved colors?')) {
+			localStorage.clear();
+			location.reload();
+		}
+	
+	},
+	
+	
+	
+	// New Ajax Request
+	//
+	// Creates a new Ajax object.
+	
+	ajaxRequest = function() {
+	
+		if (window.XMLHttpRequest) {return new XMLHttpRequest();}
+		return false;
+	
+	},
+	
+	
+	
+	// Save Colors to Server
+	//
+	// Uses the existing Ajax object to save the new
+	// color to the global colors.txt file on the server.
+	
+	saveColors = function(value) {
+	
+		var request = ajaxRequest();
+		
+		request.open('GET', 'colors/colors.php?color=' + value, true);
+		request.send(null);
+	
+	};
+	
+	
+	
+	// Initialize the app.
+	init();
 
-}
+}());
