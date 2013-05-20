@@ -4,9 +4,7 @@
 // color converting app. It also allows you to
 // save colors for later using local storage.
 // 
-// @version 2.2
-
-
+// @version 2.2.1
 
 (function() {
 	'use strict';
@@ -20,7 +18,7 @@
 	
 	settings = {
 		maxSave: 6,
-		globSave: false
+		shorthand: true
 	},
 	
 	hexInput    = document.getElementById('hex'),
@@ -42,6 +40,10 @@
 	
 	init = function() {
 	
+		if (!settings.shorthand) {
+			document.getElementById('shorthand').style.display = 'none';
+		}
+		
 		hexInput.addEventListener('keyup', getRgbValue);
 		rgbInput.addEventListener('keyup', getHexValue);
 		hexInput.addEventListener('click', function() {hexInput.select();});
@@ -94,13 +96,13 @@
 			showSaveBtn();
 			pcolor.style.background = '#' + colors.hex;
 			ptitle.innerHTML = '#' + colors.hex;
-			preview.classList.remove('transparent');
+			preview.className = '';
 		
 		}
 		else {
 		
 			hideSaveBtn();
-			preview.classList.add('transparent');
+			preview.className = 'transparent';
 		
 		}
 	
@@ -115,9 +117,17 @@
 	
 	getRgbValue = function() {
 	
-		colors.hex = hexInput.value.replace(/\s/g, '');
+		var pattern;
 		
-		if (colors.hex.match(/^([0-9a-f]{3}|[0-9a-f]{6})$/i)) {
+		colors.hex = hexInput.value.replace(/\s|#/g, '');
+		
+		if (settings.shorthand) {
+			pattern = /^([0-9a-f]{3}|[0-9a-f]{6})$/i;
+		}
+		else {
+			pattern = /^([0-9a-f]{6})$/i;
+		}
+		if (pattern.test(colors.hex)) {
 			colors.valid = true;
 			colors.rgb = hexToRgb(colors.hex);
 		}
@@ -207,11 +217,14 @@
 		hg = componentToHex(g);
 		hb = componentToHex(b);
 		
-		if (hr[0] === hr[1] && hg[0] === hg[1] && hb[0] === hb[1]) {
-			hr = hr[0];
-			hg = hg[0];
-			hb = hb[0];
+		if (settings.shorthand) {
+			if (hr[0] === hr[1] && hg[0] === hg[1] && hb[0] === hb[1]) {
+				hr = hr[0];
+				hg = hg[0];
+				hb = hb[0];
+			}
 		}
+		
 		return hr + hg + hb;
 	
 	},
@@ -252,7 +265,6 @@
 			
 			hideSaveBtn();
 			displaySavedColors();
-			if (settings.globSave) {saveColors(colors.hex);}
 		
 		}
 	
@@ -339,7 +351,7 @@
 		
 		}
 		
-		if (i > 0) {savedTitle.classList.remove('hide');}
+		if (i > 0) {savedTitle.className = '';}
 		savedColors.innerHTML = string;
 	
 	},
@@ -358,40 +370,12 @@
 			location.reload();
 		}
 	
-	},
-	
-	
-	
-	// New Ajax Request
-	//
-	// Creates a new Ajax object.
-	
-	ajaxRequest = function() {
-	
-		if (window.XMLHttpRequest) {return new XMLHttpRequest();}
-		return false;
-	
-	},
-	
-	
-	
-	// Save Colors to Server
-	//
-	// Uses the existing Ajax object to save the new
-	// color to the global colors.txt file on the server.
-	
-	saveColors = function(value) {
-	
-		var request = ajaxRequest();
-		
-		request.open('GET', 'colors/colors.php?color=' + value, true);
-		request.send(null);
-	
 	};
 	
 	
 	
-	// Initialize the app.
+	// Initialize the app
+	
 	init();
 
 }());

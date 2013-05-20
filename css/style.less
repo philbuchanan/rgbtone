@@ -150,7 +150,8 @@ input {
 /* LARGE PREVIEW SWATCH
    ---------------------------------- */
 
-.preview, .recent-preview {
+#preview,
+.recent-preview {
 	position: absolute;
 	right: 34px;
 	top: -40px;
@@ -193,10 +194,8 @@ input {
 		.transition(opacity 0.2s ease);
 	}
 }
-.preview:hover {
-	#save {opacity: 1;}
-}
-.transparent {opacity: 0;}
+#preview:hover #save {opacity: 1;}
+#preview.transparent {opacity: 0;}
 
 
 /* SMALL PREVIEW SWATCHES

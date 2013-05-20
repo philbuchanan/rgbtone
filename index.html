@@ -18,7 +18,7 @@
 	<header>
 		<h1>RGBTONE</h1>
 		<h2>Convert hex to rgb and vise versa</h2>
-		<div id="preview" class="preview transparent">
+		<div id="preview" class="transparent">
 			<div class="color-area" id="previewcolor" style="background:#fff;"></div>
 			<div class="chip-info">
 				<p><strong>Preview</strong></p>
@@ -32,7 +32,7 @@
 			<label for="hex">Hex #</label>
 			<input type="text" id="hex" name="hex" placeholder="#dc5a23" spellcheck="false" autocorrect="off" autocapitalize="off" />
 			<div class="help-text">
-				<p>Shorthand is supported.</p>
+				<p id="shorthand">Shorthand is supported.</p>
 				<p>You do not need to include the #.</p>
 			</div>
 		</div>
@@ -47,9 +47,8 @@
 	</section>
 </div>
 <div class="colors">
-	<h2 id="savedtitle" class="hide" style="margin-bottom: 12px;">Your saved <a href="colors/">colors</a><span id="reset">Reset</span></h2>
+	<h2 id="savedtitle" class="hide" style="margin-bottom: 12px;">Your saved colors<span id="reset">Reset</span></h2>
 	<div id="savedcolors"></div>
-	<div style="clear:both"></div>
 </div>
 <script src="js/script.js" type="text/javascript"></script>
 </body>
