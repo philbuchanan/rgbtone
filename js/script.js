@@ -50,7 +50,6 @@
 		rgbInput.addEventListener('click', function() {rgbInput.select();});
 		resetBtn.addEventListener('click', reset);
 		
-		getSavedColors();
 		displaySavedColors();
 	
 	},
@@ -132,6 +131,7 @@
 			colors.rgb = hexToRgb(colors.hex);
 		}
 		else {
+			rgbInput.value = '';
 			colors.valid = false;
 		}
 		updateApp('rgb');
@@ -181,6 +181,7 @@
 			colors.valid = true;
 		}
 		else {
+			hexInput.value = '';
 			colors.valid = false;
 		}
 		updateApp('hex');
@@ -264,7 +265,7 @@
 			localStorage.setItem('colors', JSON.stringify(colors.saved));
 			
 			hideSaveBtn();
-			displaySavedColors();
+			appendSavedColor(colors.hex, colors.rgb);
 		
 		}
 	
@@ -329,30 +330,54 @@
 	
 	displaySavedColors = function() {
 	
-		var string = '',
-			savedRgb = [],
-			last,
-			i;
+		var i;
 		
-		for (i = 0; i < colors.saved.length; i += 1) {
+		getSavedColors();
 		
-			savedRgb = hexToRgb(colors.saved[i]);
-			
-			if (i === settings.maxSave) {break;}
-			if ((i + 1) % 6 === 0) {last = ' last';}
-			else {last = '';}
-			
-			string += '<div class="recent-preview' + last + '">';
-			string += '<div class="color-area" style="background: #' + colors.saved[i] + '"></div>';
-			string += '<div class="chip-info">';
-			string += '<p><strong>#' + colors.saved[i] + '</strong></p>';
-			string += '<p>' + savedRgb.r + ', ' + savedRgb.g + ', ' + savedRgb.b + '</p>';
-			string += '</div></div>';
+		for (i = colors.saved.length - 1; i >= 0; i -= 1) {
+			appendSavedColor(colors.saved[i], hexToRgb(colors.saved[i]));
+		}
+	
+	},
+	
+	
+	
+	// Append Saved Color
+	//
+	// Appends a new saved color to the block of
+	// color chips.
+	//
+	// @param  hex  the hex color value string
+	// @param  rgb  an object of rgb color values
+	
+	appendSavedColor = function(hex, rgb) {
+	
+		var chip = document.createElement('div'),
+			color = document.createElement('div'),
+			info = document.createElement('div'),
+			hexString = document.createElement('p'),
+			rgbString = document.createElement('p');
 		
+		while (savedColors.children.length >= settings.maxSave) {
+			savedColors.removeChild(savedColors.lastChild);
 		}
 		
-		if (i > 0) {savedTitle.className = '';}
-		savedColors.innerHTML = string;
+		chip.className = 'recent-preview';
+		color.className = 'color-area';
+		color.style.backgroundColor = '#' + hex;
+		info.className = 'chip-info';
+		hexString.style.fontWeight = 'bold';
+		hexString.textContent = '#' + hex;
+		rgbString.textContent = rgb.r + ', ' + rgb.g + ', ' + rgb.b;
+		
+		info.appendChild(hexString);
+		info.appendChild(rgbString);
+		chip.appendChild(color);
+		chip.appendChild(info);
+		
+		savedColors.insertBefore(chip, savedColors.firstChild);
+		
+		if (colors.saved.length > 0) {savedTitle.className = '';}
 	
 	},
 	
