@@ -261,6 +261,7 @@
 				colors.saved.pop();
 			}
 			colors.saved.unshift(colors.hex);
+			colors.rgb = hexToRgb(colors.hex);
 			
 			localStorage.setItem('colors', JSON.stringify(colors.saved));
 			
