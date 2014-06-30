@@ -7,8 +7,18 @@
  * @version 3.0
  */
 
-function Converter() {
-	this.settings = {
+
+
+/**
+ * The main app constructor
+ * 
+ * Handles settings, updating app display, saving and restoring app
+ * state (colors) an all events.
+ * 
+ * @param  settings  an object of settings
+ */
+function Converter(settings) {
+	this.settings = settings || {
 		shorthand: true,
 		maxSave: 10
 	};
@@ -30,13 +40,18 @@ function Converter() {
 		this.rgbInput.addEventListener('click', this.selectInput);
 		
 		this.form.addEventListener('submit', function(event) {
-			console.log('testing this form');
 			event.preventDefault();
 			this.saveColor.call(this, color);
 		}.bind(this));
 	}).call(this);
 };
 
+/**
+ * Updates the main app display. Does not render saved colors.
+ * 
+ * @param  color  an object of the current color
+ * @param  mode   the color mode to be updated ('hex' or 'rgb')
+ */
 Converter.prototype.updateApp = function(color, mode) {
 	var inputTextColor = this.getContrast(color.hex);
 	
@@ -53,6 +68,11 @@ Converter.prototype.updateApp = function(color, mode) {
 	}
 }
 
+/**
+ * Get the array of saved colors from local storage.
+ * 
+ * @return  array  an array of color objects or false if no colors saved
+ */
 Converter.prototype.getSavedColors = function() {
 	var retrievedColors = localStorage.getItem('colors');
 	
@@ -62,6 +82,11 @@ Converter.prototype.getSavedColors = function() {
 	return false;
 };
 
+/**
+ * Saves a color oject to local storage and updates display.
+ * 
+ * @param  color  the color object to be saved
+ */
 Converter.prototype.saveColor = function(color) {
 	if (color.valid === true) {
 		while (this.savedColors.length >= this.settings.maxSave) {
@@ -74,6 +99,9 @@ Converter.prototype.saveColor = function(color) {
 	}
 };
 
+/**
+ * Renders saved colors
+ */
 Converter.prototype.displaySavedColors = function() {
 	var _self = this,
 		savedColorsNode = document.getElementById('saved-colors'),
@@ -92,11 +120,14 @@ Converter.prototype.displaySavedColors = function() {
 	});
 	
 	while (savedColorsNode.firstChild) {
-    	savedColorsNode.removeChild(savedColorsNode.firstChild);
+		savedColorsNode.removeChild(savedColorsNode.firstChild);
 	}
 	savedColorsNode.appendChild(domFrag);
 };
 
+/**
+ * Selects the contents of an input
+ */
 Converter.prototype.selectInput = function() {
 	this.select();
 }
@@ -108,11 +139,25 @@ Converter.prototype.getContrast = function(hex) {
 	return (parseInt(hex, 16) > 0xffffff / 2) ? 'dark' : 'light';
 };
 
-function Color() {
-	this.hex = '';
-	this.rgb = {};
+/**
+ * The main color constructor
+ * 
+ * A new color instance is created each time new input is entered into either
+ * the HEX or RGB input fields. This instance is updated as changes are made.
+ * This instance is also passed to saveColor to save that color to local storage.
+ * 
+ * @param  hex  the HEX value of the color
+ * @param  rgb  the RGB value of the color
+ */
+function Color(hex, rgb) {
+	this.hex = hex || '';
+	this.rgb = rgb || {};
 };
 
+/**
+ * Gets the RGB value from the HEX input and assigns it to the RGB property of
+ * the color instance. Updates the RGB input field.
+ */
 Color.prototype.getRgbValue = function() {
 	var pattern = /^([0-9a-f]{6})$/i;
 	
@@ -124,7 +169,7 @@ Color.prototype.getRgbValue = function() {
 	
 	if (pattern.test(this.hex)) {
 		this.valid = true;
-		this.rgb = this.hexToRgb();
+		this.rgb = this.hexToRgb(this.hex);
 	}
 	else {
 		this.valid = false;
@@ -134,18 +179,28 @@ Color.prototype.getRgbValue = function() {
 	converter.updateApp(this, 'rgb');
 };
 
-Color.prototype.hexToRgb = function() {
-	if (this.hex.length === 3) {
-		this.hex = this.hex[0] + this.hex[0] + this.hex[1] + this.hex[1] + this.hex[2] + this.hex[2];
+/**
+ * Convert a HEX value to RGB
+ * 
+ * @param  hex     a valid hex value (may be shorthand)
+ * @return  object  an object containing red (r), green (g) and blue (b) values
+ */
+Color.prototype.hexToRgb = function(hex) {
+	if (hex.length === 3) {
+		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 	}
 	
 	return {
-		r: parseInt(this.hex.slice(0, 2), 16),
-		g: parseInt(this.hex.slice(2, 4), 16),
-		b: parseInt(this.hex.slice(4, 6), 16)
+		r: parseInt(hex.slice(0, 2), 16),
+		g: parseInt(hex.slice(2, 4), 16),
+		b: parseInt(hex.slice(4, 6), 16)
 	};
 };
-	
+
+/**
+ * Gets the HEX value from the RGB input and assigns it to the HEX property of
+ * the color instance. Updates the HEX input field.
+ */
 Color.prototype.getHexValue = function() {
 	var r, g, b;
 	
@@ -165,11 +220,26 @@ Color.prototype.getHexValue = function() {
 	}
 	converter.updateApp(this, 'hex');
 };
-	
+
+/**
+ * Checks an RGB value to ensure it falls between 0 and 255
+ * 
+ * @return  bool  true if the value falls between 0 and 255, else false
+ */
 Color.prototype.checkColor = function(n) {
 	return (/^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/.test(n)) ? true : false;
 };
-	
+
+/**
+ * Convert an RGB value to HEX
+ * 
+ * Red, green and blue values must be valid (between 0 and 255).
+ * 
+ * @param  r  the red value
+ * @param  g  the green value
+ * @param  b  the blue value
+ * @return  string  the HEX value as a string (without #)
+ */
 Color.prototype.rgbToHex = function(r, g, b) {
 	var hr, hg, hb;
 	
@@ -187,7 +257,13 @@ Color.prototype.rgbToHex = function(r, g, b) {
 	
 	return hr + hg + hb;
 };
-	
+
+/**
+ * Converts a single red, green or blue value to HEX
+ * 
+ * @param  color  the color value (must be between 0 and 255)
+ * @return  string  the hex value
+ */
 Color.prototype.componentToHex = function(color) {
 	var hex = color.toString(16);
 	return hex.length === 1 ? '0' + hex : hex;
