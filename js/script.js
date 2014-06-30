@@ -28,7 +28,9 @@ function Converter() {
 		this.rgbInput.addEventListener('keyup', color.getHexValue.bind(color));
 		this.hexInput.addEventListener('click', this.selectInput);
 		this.rgbInput.addEventListener('click', this.selectInput);
+		
 		this.form.addEventListener('submit', function(event) {
+			console.log('testing this form');
 			event.preventDefault();
 			this.saveColor.call(this, color);
 		}.bind(this));
@@ -47,11 +49,7 @@ Converter.prototype.updateApp = function(color, mode) {
 		}
 		
 		this.body.style.backgroundColor = '#' + color.hex;
-		this.hexInput.className = this.rgbInput.className = inputTextColor;
-	}
-	else {
-		this.body.removeAttribute('style');
-		this.hexInput.className = this.rgbInput.className = 'dark';
+		this.body.className = inputTextColor;
 	}
 }
 
@@ -129,8 +127,8 @@ Color.prototype.getRgbValue = function() {
 		this.rgb = this.hexToRgb();
 	}
 	else {
-		converter.rgbInput.value = '';
 		this.valid = false;
+		converter.rgbInput.value = '';
 	}
 	
 	converter.updateApp(this, 'rgb');
@@ -158,12 +156,12 @@ Color.prototype.getHexValue = function() {
 	b = parseInt(this.rgb[2], 10);
 	
 	if (this.checkColor(r) && this.checkColor(g) && this.checkColor(b)) {
-		this.hex = this.rgbToHex(r, g, b);
 		this.valid = true;
+		this.hex = this.rgbToHex(r, g, b);
 	}
 	else {
-		converter.hexInput.value = '';
 		this.valid = false;
+		converter.hexInput.value = '';
 	}
 	converter.updateApp(this, 'hex');
 };
