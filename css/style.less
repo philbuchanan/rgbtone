@@ -28,7 +28,7 @@ button, input, select, textarea {margin: 0;}
  
 body {
 	font: 13px/18px Helvetica, Arial, sans-serif;
-	transition: 0.3s;
+	transition: 0.7s;
 }
 
 
@@ -43,20 +43,22 @@ body {
 	clip: rect(1px, 1px, 1px, 1px);
 	position: absolute;
 }
+
 #saved-colors {
-	background-color: #fff;
+	background-color: #fafafa;
 	position: fixed;
 	left: 0;
 	right: 0;
 	bottom: 0;
 	padding-top: 2px;
+	overflow: hidden;
 	.color {
 		float: left;
 		position: relative;
 		width: 100px;
 		height: 100px;
-		margin-left: 2px;
-		&:first-child {margin: 0;}
+		margin: 0 2px 2px 0;
+		&:last-child {margin-right: 0;}
 		&.light {color: #fff;}
 		p {
 			position: absolute;
@@ -87,7 +89,7 @@ form {
 		margin-bottom: 12px;
 		padding: 6px;
 		-webkit-appearance: none;
-		transition: 0.3s;
+		transition: 0.7s;
 		&#hex {margin-bottom: 12px;}
 		&:focus {outline: none;}
 	}

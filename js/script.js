@@ -20,7 +20,7 @@
 function Converter(settings) {
 	this.settings = settings || {
 		shorthand: true,
-		maxSave: 15
+		maxSave: 10
 	};
 	
 	this.body = document.body;
@@ -91,7 +91,7 @@ Converter.prototype.getSavedColors = function() {
  * @param  color  the color object to be saved
  */
 Converter.prototype.saveColor = function(color) {
-	if (color.valid === true) {
+	if (color.valid === true && !this.inSaved(color)) {
 		while (this.savedColors.length >= this.settings.maxSave) {
 			this.savedColors.pop();
 		}
@@ -104,6 +104,23 @@ Converter.prototype.saveColor = function(color) {
 		this.displaySavedColors();
 	}
 };
+
+/**
+ * Check if color is already in saved colors array
+ * 
+ * @param  color  the color to check
+ * @return  bool  true if it is, else false
+ */
+Converter.prototype.inSaved = function(color) {
+	var i;
+	
+	for (i = 0; i < this.savedColors.length; i += 1) {
+		if (this.savedColors[i].hex === color.hex) {
+			return true;
+		}
+	}
+	return false;
+}
 
 /**
  * Renders saved colors
