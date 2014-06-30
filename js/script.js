@@ -92,7 +92,10 @@ Converter.prototype.saveColor = function(color) {
 		while (this.savedColors.length >= this.settings.maxSave) {
 			this.savedColors.pop();
 		}
-		this.savedColors.unshift(color);
+		this.savedColors.unshift({
+			hex: color.hex,
+			rgb: color.rgb
+		});
 		
 		localStorage.setItem('colors', JSON.stringify(this.savedColors));
 		this.displaySavedColors();
