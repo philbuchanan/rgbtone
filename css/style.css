@@ -171,6 +171,6 @@ form input[type="text"].light {
 form input[type="text"].light:focus {
   border-bottom-color: #fff;
 }
-form button {
+form input[type="submit"] {
   display: none;
 }

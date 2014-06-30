@@ -8,14 +8,13 @@
  */
 
 function Converter() {
-	var _self = this;
-	
 	this.settings = {
 		shorthand: true,
-		maxSave: 1
+		maxSave: 10
 	};
 	
 	this.body = document.body;
+	this.form = document.getElementById('form');
 	this.hexInput = document.getElementById('hex');
 	this.rgbInput = document.getElementById('rgb');
 	
@@ -25,20 +24,19 @@ function Converter() {
 	(function() {
 		var color = new Color();
 		
-		_self.hexInput.addEventListener('keyup', color.getRgbValue.bind(color));
-		_self.rgbInput.addEventListener('keyup', color.getHexValue.bind(color));
-		_self.hexInput.addEventListener('click', _self.selectInput);
-		_self.rgbInput.addEventListener('click', _self.selectInput);
-		/*document.getElementById('form').addEventListener('submit', function(event) {
-			_self.saveColor.call(_self, color);
+		this.hexInput.addEventListener('keyup', color.getRgbValue.bind(color));
+		this.rgbInput.addEventListener('keyup', color.getHexValue.bind(color));
+		this.hexInput.addEventListener('click', this.selectInput);
+		this.rgbInput.addEventListener('click', this.selectInput);
+		this.form.addEventListener('submit', function(event) {
 			event.preventDefault();
-		});*/
-	}());
+			this.saveColor.call(this, color);
+		}.bind(this));
+	}).call(this);
 };
 
 Converter.prototype.updateApp = function(color, mode) {
 	var inputTextColor = this.getContrast(color.hex);
-	console.log(color.hex);
 	
 	if (color.valid) {
 		if (mode === 'hex') {
