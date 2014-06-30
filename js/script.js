@@ -63,7 +63,7 @@ Converter.prototype.updateApp = function(color, mode) {
 			this.hexInput.value = color.hex;
 		}
 		else if (mode === 'rgb') {
-			this.rgbInput.value = color.rgb.r + ', ' + color.rgb.g + ', ' + color.rgb.b;
+			this.rgbInput.value = this.getCombinedRgb(color.rgb);
 		}
 		
 		this.body.style.backgroundColor = '#' + color.hex;
@@ -119,7 +119,8 @@ Converter.prototype.displaySavedColors = function() {
 		
 		colorNode.className = 'color ' + _self.getContrast(color.hex);
 		colorNode.style.backgroundColor = '#' + color.hex;
-		colorText.innerHTML = '#' + color.hex + '<br/>' + color.rgb.r + ', ' + color.rgb.g + ', ' + color.rgb.b;
+		colorText.innerHTML = '#' + color.hex +
+			'<br/>' + _self.getCombinedRgb(color.rgb);
 		colorNode.appendChild(colorText);
 		
 		domFrag.appendChild(colorNode);
@@ -138,6 +139,16 @@ Converter.prototype.selectInput = function() {
 	this.select();
 }
 
+/**
+ * Get combined RGB string
+ * 
+ * @param  rgb  an object of RGB values
+ * @return  string  a string of comma seperated RGB values
+ */
+Converter.prototype.getCombinedRgb = function(rgb) {
+	return [rgb.r, rgb.g, rgb.b].join(', ');
+}
+
 Converter.prototype.getContrast = function(hex) {
 	if (hex.length === 3) {
 		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
@@ -150,7 +161,7 @@ Converter.prototype.getContrast = function(hex) {
  * 
  * A new color instance is created each time new input is entered into either
  * the HEX or RGB input fields. This instance is updated as changes are made.
- * This instance is also passed to saveColor to save that color to local storage.
+ * The instance may also be passed to saveColor to save it to local storage.
  * 
  * @param  hex  the HEX value of the color
  * @param  rgb  the RGB value of the color
@@ -233,7 +244,8 @@ Color.prototype.getHexValue = function() {
  * @return  bool  true if the value falls between 0 and 255, else false
  */
 Color.prototype.checkColor = function(n) {
-	return (/^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/.test(n)) ? true : false;
+	var pattern = /^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/;
+	return (pattern.test(n)) ? true : false;
 };
 
 /**
