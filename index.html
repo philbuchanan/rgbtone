@@ -15,18 +15,16 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 </head>
 <body>
-<div class="container">
-	<form action="" method="get" onsubmit="return false;">
-		<label for="hex" class="screen-reader-text">Hex #. Shorthand notation is supported. You do not need to include the #.</label>
-		<input type="text" id="hex" name="hex" placeholder="#dc5a23" spellcheck="false" autocorrect="off" autocapitalize="off" />
-		<label for="rgb" class="screen-reader-text">RGB Values. Separate each color value with a comma.</label>
-		<input type="text" id="rgb" name="rgb" placeholder="172, 209, 35" spellcheck="false" autocorrect="off" autocapitalize="off" />
-		<!--button id="save">Save Color</button-->
+	<div class="container">
+		<form action="" method="get" id="form">
+			<label for="hex" class="screen-reader-text">Hex #. Shorthand notation is supported. You do not need to include the #.</label>
+			<input type="text" id="hex" name="hex" placeholder="#dc5a23" spellcheck="false" autocorrect="off" autocapitalize="off" />
+			<label for="rgb" class="screen-reader-text">RGB Values. Separate each color value with a comma.</label>
+			<input type="text" id="rgb" name="rgb" placeholder="172, 209, 35" spellcheck="false" autocorrect="off" autocapitalize="off" />
+			<button id="save">Save Color</button>
+		</div>
 	</div>
-</div>
-<div class="colors">
-	<div id="savedcolors"></div>
-</div>
-<script src="js/script.js" type="text/javascript"></script>
+	<div id="saved-colors"></div>
+	<script src="js/script.js" type="text/javascript"></script>
 </body>
 </html>

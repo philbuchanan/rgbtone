@@ -1,28 +1,118 @@
-// Copyright 2011-2013 Phil Buchanan
-//
-// RGBTONE is a simple HEX to RGB (and vise versa)
-// color converting app. It also allows you to
-// save colors for later using local storage.
-// 
-// @version 3.0
+/**
+ * Copyright 2011-2014 Phil Buchanan
+ * 
+ * RGBTONE is a simple HEX to RGB (and vise versa) color converting app.
+ * It also allows you to save colors for later using local storage.
+ * 
+ * @version 3.0
+ */
 
 function Converter() {
 	var _self = this;
 	
+	this.settings = {
+		shorthand: true,
+		maxSave: 1
+	};
+	
 	this.body = document.body;
 	this.hexInput = document.getElementById('hex');
 	this.rgbInput = document.getElementById('rgb');
+	
+	this.savedColors = this.getSavedColors() || [];
+	this.displaySavedColors();
 	
 	(function() {
 		var color = new Color();
 		
 		_self.hexInput.addEventListener('keyup', color.getRgbValue.bind(color));
 		_self.rgbInput.addEventListener('keyup', color.getHexValue.bind(color));
+		_self.hexInput.addEventListener('click', _self.selectInput);
+		_self.rgbInput.addEventListener('click', _self.selectInput);
+		/*document.getElementById('form').addEventListener('submit', function(event) {
+			_self.saveColor.call(_self, color);
+			event.preventDefault();
+		});*/
 	}());
 };
 
+Converter.prototype.updateApp = function(color, mode) {
+	var inputTextColor = this.getContrast(color.hex);
+	console.log(color.hex);
+	
+	if (color.valid) {
+		if (mode === 'hex') {
+			this.hexInput.value = color.hex;
+		}
+		else if (mode === 'rgb') {
+			this.rgbInput.value = color.rgb.r + ', ' + color.rgb.g + ', ' + color.rgb.b;
+		}
+		
+		this.body.style.backgroundColor = '#' + color.hex;
+		this.hexInput.className = this.rgbInput.className = inputTextColor;
+	}
+	else {
+		this.body.removeAttribute('style');
+		this.hexInput.className = this.rgbInput.className = 'dark';
+	}
+}
+
+Converter.prototype.getSavedColors = function() {
+	var retrievedColors = localStorage.getItem('colors');
+	
+	if (retrievedColors !== null) {
+		return JSON.parse(retrievedColors);
+	}
+	return false;
+};
+
+Converter.prototype.saveColor = function(color) {
+	if (color.valid === true) {
+		while (this.savedColors.length >= this.settings.maxSave) {
+			this.savedColors.pop();
+		}
+		this.savedColors.unshift(color);
+		
+		localStorage.setItem('colors', JSON.stringify(this.savedColors));
+		this.displaySavedColors();
+	}
+};
+
+Converter.prototype.displaySavedColors = function() {
+	var _self = this,
+		savedColorsNode = document.getElementById('saved-colors'),
+		domFrag = document.createDocumentFragment();
+	
+	this.savedColors.forEach(function(color, i, arr) {
+		var colorNode = document.createElement('div'),
+			colorText = document.createElement('p');
+		
+		colorNode.className = 'color ' + _self.getContrast(color.hex);
+		colorNode.style.backgroundColor = '#' + color.hex;
+		colorText.innerHTML = '#' + color.hex + '<br/>' + color.rgb.r + ', ' + color.rgb.g + ', ' + color.rgb.b;
+		colorNode.appendChild(colorText);
+		
+		domFrag.appendChild(colorNode);
+	});
+	
+	while (savedColorsNode.firstChild) {
+    	savedColorsNode.removeChild(savedColorsNode.firstChild);
+	}
+	savedColorsNode.appendChild(domFrag);
+};
+
+Converter.prototype.selectInput = function() {
+	this.select();
+}
+
+Converter.prototype.getContrast = function(hex) {
+	if (hex.length === 3) {
+		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+	}
+	return (parseInt(hex, 16) > 0xffffff / 2) ? 'dark' : 'light';
+};
+
 function Color() {
-	this.valid = false;
 	this.hex = '';
 	this.rgb = {};
 };
@@ -32,53 +122,52 @@ Color.prototype.getRgbValue = function() {
 	
 	this.hex = converter.hexInput.value.replace(/\s|#/g, '');
 	
-	/*if (settings.shorthand) {
+	if (converter.settings.shorthand) {
 		pattern = /^([0-9a-f]{3}|[0-9a-f]{6})$/i;
-	}*/
+	}
 	
 	if (pattern.test(this.hex)) {
 		this.valid = true;
-		this.rgb = hexToRgb(this.hex);
+		this.rgb = this.hexToRgb();
 	}
 	else {
 		converter.rgbInput.value = '';
 		this.valid = false;
 	}
 	
-	console.log(this);
-	//updateApp('rgb');
+	converter.updateApp(this, 'rgb');
 };
 
-Color.prototype.hexToRgb = function(hex) {
-	if (hex.length === 3) {
-		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+Color.prototype.hexToRgb = function() {
+	if (this.hex.length === 3) {
+		this.hex = this.hex[0] + this.hex[0] + this.hex[1] + this.hex[1] + this.hex[2] + this.hex[2];
 	}
 	
 	return {
-		r: parseInt(hex.slice(0, 2), 16),
-		g: parseInt(hex.slice(2, 4), 16),
-		b: parseInt(hex.slice(4, 6), 16)
+		r: parseInt(this.hex.slice(0, 2), 16),
+		g: parseInt(this.hex.slice(2, 4), 16),
+		b: parseInt(this.hex.slice(4, 6), 16)
 	};
 };
 	
 Color.prototype.getHexValue = function() {
-	var r, g, b, rgb;
+	var r, g, b;
 	
-	rgb = rgbInput.value.replace(/\s/g, '').split(',', 3);
+	this.rgb = converter.rgbInput.value.replace(/\s/g, '').split(',', 3);
 	
-	r = parseInt(rgb[0], 10);
-	g = parseInt(rgb[1], 10);
-	b = parseInt(rgb[2], 10);
+	r = parseInt(this.rgb[0], 10);
+	g = parseInt(this.rgb[1], 10);
+	b = parseInt(this.rgb[2], 10);
 	
-	if (checkColor(r) && checkColor(g) && checkColor(b)) {
-		colors.hex = rgbToHex(r, g, b);
-		colors.valid = true;
+	if (this.checkColor(r) && this.checkColor(g) && this.checkColor(b)) {
+		this.hex = this.rgbToHex(r, g, b);
+		this.valid = true;
 	}
 	else {
-		hexInput.value = '';
-		colors.valid = false;
+		converter.hexInput.value = '';
+		this.valid = false;
 	}
-	updateApp('hex');
+	converter.updateApp(this, 'hex');
 };
 	
 Color.prototype.checkColor = function(n) {
@@ -88,11 +177,11 @@ Color.prototype.checkColor = function(n) {
 Color.prototype.rgbToHex = function(r, g, b) {
 	var hr, hg, hb;
 	
-	hr = componentToHex(r);
-	hg = componentToHex(g);
-	hb = componentToHex(b);
+	hr = this.componentToHex(r);
+	hg = this.componentToHex(g);
+	hb = this.componentToHex(b);
 	
-	if (settings.shorthand) {
+	if (converter.settings.shorthand) {
 		if (hr[0] === hr[1] && hg[0] === hg[1] && hb[0] === hb[1]) {
 			hr = hr[0];
 			hg = hg[0];
