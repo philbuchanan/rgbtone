@@ -126,27 +126,32 @@ Converter.prototype.inSaved = function(color) {
  * Renders saved colors
  */
 Converter.prototype.displaySavedColors = function() {
-	var _self = this,
-		savedColorsNode = document.getElementById('saved-colors'),
-		domFrag = document.createDocumentFragment();
+	var savedColorsNode = document.getElementById('saved-colors'),
+		domFragment = document.createDocumentFragment();
 	
-	this.savedColors.forEach(function(color, i, arr) {
-		var colorNode = document.createElement('div'),
-			colorText = document.createElement('p');
-		
-		colorNode.className = 'color ' + _self.getContrast(color.hex);
-		colorNode.style.backgroundColor = '#' + color.hex;
-		colorText.innerHTML = '#' + color.hex +
-			'<br/>' + _self.getCombinedRgb(color.rgb);
-		colorNode.appendChild(colorText);
-		
-		domFrag.appendChild(colorNode);
-	});
+	if (this.savedColors.length > 0) {
 	
-	while (savedColorsNode.firstChild) {
-		savedColorsNode.removeChild(savedColorsNode.firstChild);
+		this.savedColors.forEach(function(color) {
+			var colorNode = document.createElement('div'),
+				colorText = document.createElement('p');
+			
+			colorNode.className = 'color ' + this.getContrast(color.hex);
+			colorNode.style.backgroundColor = '#' + color.hex;
+			colorText.innerHTML = '#' + color.hex +
+				'<br/>' + this.getCombinedRgb(color.rgb);
+			colorNode.appendChild(colorText);
+			
+			domFragment.appendChild(colorNode);
+		}.bind(this));
+		
+		savedColorsNode.style.display = 'block';
+		savedColorsNode.innerHTML = '';
+		savedColorsNode.appendChild(domFragment);
+	
 	}
-	savedColorsNode.appendChild(domFrag);
+	else {
+		savedColorsNode.style.display = 'none';
+	}
 };
 
 /**

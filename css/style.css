@@ -115,7 +115,7 @@ body {
   position: absolute;
 }
 #saved-colors {
-  background-color: #fafafa;
+  background-color: #f2f2f2;
   position: fixed;
   left: 0;
   right: 0;
@@ -130,8 +130,8 @@ body {
   height: 100px;
   margin: 0 2px 2px 0;
 }
-#saved-colors .color:last-child {
-  margin-right: 0;
+#saved-colors .color:first-child {
+  margin-right: 0px;
 }
 #saved-colors .color.light {
   color: #fff;
