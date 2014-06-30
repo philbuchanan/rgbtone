@@ -20,7 +20,7 @@
 function Converter(settings) {
 	this.settings = settings || {
 		shorthand: true,
-		maxSave: 10
+		maxSave: 9
 	};
 	
 	this.body = document.body;
@@ -127,7 +127,8 @@ Converter.prototype.inSaved = function(color) {
  */
 Converter.prototype.displaySavedColors = function() {
 	var savedColorsNode = document.getElementById('saved-colors'),
-		domFragment = document.createDocumentFragment();
+		domFragment = document.createDocumentFragment()
+		width = (this.savedColors.length * 102) + 2;
 	
 	if (this.savedColors.length > 0) {
 	
@@ -145,6 +146,7 @@ Converter.prototype.displaySavedColors = function() {
 		}.bind(this));
 		
 		savedColorsNode.style.display = 'block';
+		savedColorsNode.style.maxWidth = width + 'px';
 		savedColorsNode.innerHTML = '';
 		savedColorsNode.appendChild(domFragment);
 	
