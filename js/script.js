@@ -31,6 +31,7 @@ function Converter(settings) {
 	this.savedColors = this.getSavedColors() || [];
 	this.displaySavedColors();
 	
+	// Add events
 	(function() {
 		var color = new Color();
 		
@@ -38,6 +39,8 @@ function Converter(settings) {
 		this.rgbInput.addEventListener('keyup', color.getHexValue.bind(color));
 		this.hexInput.addEventListener('click', this.selectInput);
 		this.rgbInput.addEventListener('click', this.selectInput);
+		
+		this.hexInput.focus();
 		
 		this.form.addEventListener('submit', function(event) {
 			event.preventDefault();
