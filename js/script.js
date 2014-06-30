@@ -20,7 +20,7 @@
 function Converter(settings) {
 	this.settings = settings || {
 		shorthand: true,
-		maxSave: 10
+		maxSave: 15
 	};
 	
 	this.body = document.body;
@@ -219,17 +219,22 @@ Color.prototype.hexToRgb = function(hex) {
  * the color instance. Updates the HEX input field.
  */
 Color.prototype.getHexValue = function() {
-	var r, g, b;
+	var rgb, red, green, blue;
 	
-	this.rgb = converter.rgbInput.value.replace(/\s/g, '').split(',', 3);
+	rgb = converter.rgbInput.value.replace(/\s/g, '').split(',', 3);
 	
-	r = parseInt(this.rgb[0], 10);
-	g = parseInt(this.rgb[1], 10);
-	b = parseInt(this.rgb[2], 10);
+	red   = parseInt(rgb[0], 10);
+	green = parseInt(rgb[1], 10);
+	blue  = parseInt(rgb[2], 10);
 	
-	if (this.checkColor(r) && this.checkColor(g) && this.checkColor(b)) {
+	if (this.checkValue(red) && this.checkValue(green) && this.checkValue(blue)) {
 		this.valid = true;
-		this.hex = this.rgbToHex(r, g, b);
+		this.hex = this.rgbToHex(red, green, blue);
+		this.rgb = {
+			r: red,
+			g: green,
+			b: blue
+		};
 	}
 	else {
 		this.valid = false;
@@ -241,9 +246,10 @@ Color.prototype.getHexValue = function() {
 /**
  * Checks an RGB value to ensure it falls between 0 and 255
  * 
+ * @param  n  the number to test
  * @return  bool  true if the value falls between 0 and 255, else false
  */
-Color.prototype.checkColor = function(n) {
+Color.prototype.checkValue = function(n) {
 	var pattern = /^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/;
 	return (pattern.test(n)) ? true : false;
 };
