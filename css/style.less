@@ -22,12 +22,14 @@ hr {display: block; height: 0; border: 0; border-top: 1px solid #ddd; margin: 0;
 input, select {vertical-align: middle;}
 button, input, select, textarea {margin: 0;}
 
+@baseFontFamily: Helvetica, Arial, sans-serif;
+
 
 /* FONT TREATMENTS
    ---------------------------------- */
  
 body {
-	font: 13px/18px Helvetica, Arial, sans-serif;
+	font: 13px/18px @baseFontFamily;
 	transition: 0.7s;
 }
 * {
@@ -54,35 +56,26 @@ body {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	width: 320px;
 	margin: 0 auto;
-	padding-top: 2px;
+	padding-left: 2px;
 	overflow: hidden;
 	.color {
 		float: left;
 		position: relative;
-		width: 100px;
-		height: 56px;
-		margin: 0 0 2px 2px;
-		&:last-child {margin-right: 2px;}
+		bottom: -50px;
+		font-weight: 500;
+		width: 104px;
+		height: 70px;
+		margin-left: -2px;
+		border: 2px solid #fff;
+		transition: bottom 0.3s;
+		&:hover {bottom: -2px;}
 		&.light {color: #fff;}
 		p {
 			position: absolute;
 			left: 10px;
 			bottom: 10px;
 		}
-	}
-}
-@media (min-width: 418px) {
-	#saved-colors {
-		width: 418px;
-		.color:last-child {display: none;}
-	}
-}
-@media (min-width: 920px) {
-	#saved-colors {
-		width: inherit;
-		.color:last-child {display: inherit;}
 	}
 }
 
@@ -99,8 +92,9 @@ form {
 		display: block;
 		color: #222;
 		background: transparent;
-		font-family: Helvetica, Arial, sans-serif;
+		font-family: @baseFontFamily;
 		font-size: 36px;
+		font-weight: 100;
 		border: none;
 		border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
 		width: 261px;
@@ -112,6 +106,30 @@ form {
 		&:focus {outline: none;}
 	}
 	input[type="submit"] {visibility: hidden;}
+}
+button {
+	position: fixed;
+	bottom: 25px;
+	right: 25px;
+	color: rgba(34, 34, 34, 0.4);
+	background: none;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 18px;
+	line-height: 20px;
+	font-weight: bold;
+	border: 2px solid rgba(34, 34, 34, 0.4);
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	-webkit-border-radius: 50%;
+	   -moz-border-radius: 50%;
+	        border-radius: 50%;
+	-webkit-appearance: none;
+	transition: 0.3s;
+	&:hover {
+		color: #222;
+		border-color: #222;
+	}
 }
 ::-webkit-input-placeholder {color: rgba(34, 34, 34, 0.4);}
 :-moz-placeholder {color: rgba(34, 34, 34, 0.4);}
@@ -126,6 +144,14 @@ form {
 	form input[type="text"] {
 		color: #fff;
 		border-bottom-color: rgba(255, 255, 255, 0.4);
+	}
+	button {
+		color: rgba(255, 255, 255, 0.4);
+		border-color: rgba(255, 255, 255, 0.4);
+		&:hover {
+			color: #fff;
+			border-color: #fff;
+		}
 	}
 	::-webkit-input-placeholder {color: rgba(255, 255, 255, 0.4);}
 	:-moz-placeholder {color: rgba(255, 255, 255, 0.4);}

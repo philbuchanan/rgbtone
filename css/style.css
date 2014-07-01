@@ -124,20 +124,23 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  width: 320px;
   margin: 0 auto;
-  padding-top: 2px;
+  padding-left: 2px;
   overflow: hidden;
 }
 #saved-colors .color {
   float: left;
   position: relative;
-  width: 100px;
-  height: 56px;
-  margin: 0 0 2px 2px;
+  bottom: -50px;
+  font-weight: 500;
+  width: 104px;
+  height: 70px;
+  margin-left: -2px;
+  border: 2px solid #fff;
+  transition: bottom 0.3s;
 }
-#saved-colors .color:last-child {
-  margin-right: 2px;
+#saved-colors .color:hover {
+  bottom: -2px;
 }
 #saved-colors .color.light {
   color: #fff;
@@ -146,22 +149,6 @@ body {
   position: absolute;
   left: 10px;
   bottom: 10px;
-}
-@media (min-width: 418px) {
-  #saved-colors {
-    width: 418px;
-  }
-  #saved-colors .color:last-child {
-    display: none;
-  }
-}
-@media (min-width: 920px) {
-  #saved-colors {
-    width: inherit;
-  }
-  #saved-colors .color:last-child {
-    display: inherit;
-  }
 }
 /* INPUTS
    ---------------------------------- */
@@ -177,6 +164,7 @@ form input[type="text"] {
   background: transparent;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 36px;
+  font-weight: 100;
   border: none;
   border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
   width: 261px;
@@ -193,6 +181,30 @@ form input[type="text"]:focus {
 }
 form input[type="submit"] {
   visibility: hidden;
+}
+button {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  color: rgba(34, 34, 34, 0.4);
+  background: none;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 20px;
+  font-weight: bold;
+  border: 2px solid rgba(34, 34, 34, 0.4);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  transition: 0.3s;
+}
+button:hover {
+  color: #222;
+  border-color: #222;
 }
 ::-webkit-input-placeholder {
   color: rgba(34, 34, 34, 0.4);
@@ -211,6 +223,14 @@ form input[type="submit"] {
 .light form input[type="text"] {
   color: #fff;
   border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+.light button {
+  color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.light button:hover {
+  color: #fff;
+  border-color: #fff;
 }
 .light ::-webkit-input-placeholder {
   color: rgba(255, 255, 255, 0.4);

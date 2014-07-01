@@ -40,6 +40,8 @@ function Converter(settings) {
 		this.hexInput.addEventListener('click', this.selectInput);
 		this.rgbInput.addEventListener('click', this.selectInput);
 		
+		document.getElementById('clear').addEventListener('click', this.reset.bind(this));
+		
 		this.hexInput.focus();
 		
 		this.form.addEventListener('submit', function(event) {
@@ -146,12 +148,26 @@ Converter.prototype.displaySavedColors = function() {
 		}.bind(this));
 		
 		savedColorsNode.style.display = 'block';
-		savedColorsNode.style.maxWidth = width + 'px';
+		savedColorsNode.style.width = width + 'px';
 		savedColorsNode.innerHTML = '';
 		savedColorsNode.appendChild(domFragment);
 	
 	}
 	else {
+		savedColorsNode.style.display = 'none';
+	}
+};
+
+/**
+ * Remove saved colors and clear local storage
+ */
+Converter.prototype.reset = function() {
+	var savedColorsNode = document.getElementById('saved-colors');
+	
+	if (confirm('Are you sure you want to remove all saved colors?')) {
+		this.savedColors = [];
+		localStorage.clear();
+		savedColorsNode.innerHTML = '';
 		savedColorsNode.style.display = 'none';
 	}
 };
