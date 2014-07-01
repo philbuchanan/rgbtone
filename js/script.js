@@ -29,6 +29,7 @@ function Converter(settings) {
 	this.form = document.getElementById('form');
 	this.hexInput = document.getElementById('hex');
 	this.rgbInput = document.getElementById('rgb');
+	this.clearBtn = document.getElementById('clear');
 	
 	this.savedColors = this.getSavedColors() || [];
 	this.displaySavedColors();
@@ -41,8 +42,7 @@ function Converter(settings) {
 		this.rgbInput.addEventListener('keyup', color.getHexValue.bind(color));
 		this.hexInput.addEventListener('click', this.selectInput);
 		this.rgbInput.addEventListener('click', this.selectInput);
-		
-		document.getElementById('clear').addEventListener('click', this.reset.bind(this));
+		this.clearBtn.addEventListener('click', this.reset.bind(this));
 		
 		this.hexInput.focus();
 		
@@ -149,6 +149,7 @@ Converter.prototype.displaySavedColors = function() {
 			domFragment.appendChild(colorNode);
 		}.bind(this));
 		
+		this.clearBtn.style.display = 'block';
 		savedColorsNode.style.display = 'block';
 		savedColorsNode.style.width = width + 'px';
 		savedColorsNode.innerHTML = '';
@@ -156,6 +157,7 @@ Converter.prototype.displaySavedColors = function() {
 	
 	}
 	else {
+		this.clearBtn.style.display = 'none';
 		savedColorsNode.style.display = 'none';
 	}
 };
@@ -164,13 +166,11 @@ Converter.prototype.displaySavedColors = function() {
  * Remove saved colors and clear local storage
  */
 Converter.prototype.reset = function() {
-	var savedColorsNode = document.getElementById('saved-colors');
-	
 	if (confirm('Are you sure you want to remove all saved colors?')) {
+		event.preventDefault();
 		this.savedColors = [];
 		localStorage.clear();
-		savedColorsNode.innerHTML = '';
-		savedColorsNode.style.display = 'none';
+		this.displaySavedColors();
 	}
 };
 
