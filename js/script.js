@@ -9,6 +9,8 @@
 
 
 
+var converter;
+
 /**
  * The main app constructor
  * 
@@ -46,10 +48,10 @@ function Converter(settings) {
 		
 		this.form.addEventListener('submit', function(event) {
 			event.preventDefault();
-			this.saveColor.call(this, color);
+			this.saveColor(color);
 		}.bind(this));
-	}).call(this);
-};
+	}.bind(this)());
+}
 
 /**
  * Updates the main app display. Does not render saved colors.
@@ -62,16 +64,16 @@ Converter.prototype.updateApp = function(color, mode) {
 	
 	if (color.valid) {
 		if (mode === 'hex') {
-			this.hexInput.value = color.hex;
+			this.hexInput.value = this.getDisplayHex(color.hex);
 		}
 		else if (mode === 'rgb') {
-			this.rgbInput.value = this.getCombinedRgb(color.rgb);
+			this.rgbInput.value = this.getDisplayRgb(color.rgb);
 		}
 		
 		this.body.style.backgroundColor = '#' + color.hex;
 		this.body.className = inputTextColor;
 	}
-}
+};
 
 /**
  * Get the array of saved colors from local storage.
@@ -122,14 +124,14 @@ Converter.prototype.inSaved = function(color) {
 		}
 	}
 	return false;
-}
+};
 
 /**
  * Renders saved colors
  */
 Converter.prototype.displaySavedColors = function() {
 	var savedColorsNode = document.getElementById('saved-colors'),
-		domFragment = document.createDocumentFragment()
+		domFragment = document.createDocumentFragment(),
 		width = (this.savedColors.length * 102) + 2;
 	
 	if (this.savedColors.length > 0) {
@@ -141,7 +143,7 @@ Converter.prototype.displaySavedColors = function() {
 			colorNode.className = 'color ' + this.getContrast(color.hex);
 			colorNode.style.backgroundColor = '#' + color.hex;
 			colorText.innerHTML = '#' + color.hex +
-				'<br/>' + this.getCombinedRgb(color.rgb);
+				'<br/>' + this.getDisplayRgb(color.rgb);
 			colorNode.appendChild(colorText);
 			
 			domFragment.appendChild(colorNode);
@@ -177,17 +179,28 @@ Converter.prototype.reset = function() {
  */
 Converter.prototype.selectInput = function() {
 	this.select();
-}
+};
 
 /**
- * Get combined RGB string
+ * Get display HEX string
+ * 
+ * @param  hex  the hex string
+ * @return  string  the string to display as the HEX value
+ */
+
+Converter.prototype.getDisplayHex = function(hex) {
+	return '#' + hex;
+};
+
+/**
+ * Get display RGB string
  * 
  * @param  rgb  an object of RGB values
  * @return  string  a string of comma seperated RGB values
  */
-Converter.prototype.getCombinedRgb = function(rgb) {
+Converter.prototype.getDisplayRgb = function(rgb) {
 	return [rgb.r, rgb.g, rgb.b].join(', ');
-}
+};
 
 Converter.prototype.getContrast = function(hex) {
 	if (hex.length === 3) {
@@ -209,7 +222,7 @@ Converter.prototype.getContrast = function(hex) {
 function Color(hex, rgb) {
 	this.hex = hex || '';
 	this.rgb = rgb || {};
-};
+}
 
 /**
  * Gets the RGB value from the HEX input and assigns it to the RGB property of
@@ -333,4 +346,4 @@ Color.prototype.componentToHex = function(color) {
 	return hex.length === 1 ? '0' + hex : hex;
 };
 
-var converter = new Converter();
+converter = new Converter();
