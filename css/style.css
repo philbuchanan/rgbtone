@@ -98,10 +98,22 @@ select,
 textarea {
   margin: 0;
 }
+@font-face {
+  font-family: "Cooper Hewitt";
+  src: url('../fonts/CooperHewitt-Light.eot');
+  src: url('../fonts/CooperHewitt-Light.eot?#iefix') format('embedded-opentype'), url('../fonts/CooperHewitt-Light.woff') format('woff'), url('../fonts/CooperHewitt-Light.svg') format('svg');
+  font-weight: normal;
+}
+@font-face {
+  font-family: "Cooper Hewitt";
+  src: url('../fonts/CooperHewitt-Medium.eot');
+  src: url('../fonts/CooperHewitt-Medium.eot?#iefix') format('embedded-opentype'), url('../fonts/CooperHewitt-Medium.woff') format('woff'), url('../fonts/CooperHewitt-Medium.svg') format('svg');
+  font-weight: bold;
+}
 /* FONT TREATMENTS
    ---------------------------------- */
 body {
-  font: 13px/18px Helvetica, Arial, sans-serif;
+  font: 13px/18px "Cooper Hewitt", Helvetica, Arial, sans-serif;
   transition: 0.7s;
 }
 * {
@@ -132,7 +144,7 @@ body {
   float: left;
   position: relative;
   bottom: -50px;
-  font-weight: 500;
+  font-weight: bold;
   width: 104px;
   height: 70px;
   margin-left: -2px;
@@ -162,14 +174,15 @@ form input[type="text"] {
   display: block;
   color: #222;
   background: transparent;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: "Cooper Hewitt", Helvetica, Arial, sans-serif;
   font-size: 36px;
-  font-weight: 100;
+  line-height: 1.3em;
+  font-weight: normal;
   border: none;
   border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
   width: 261px;
   margin-bottom: 12px;
-  padding: 6px;
+  padding: 12px 6px 0;
   -webkit-appearance: none;
   transition: 0.7s;
 }
