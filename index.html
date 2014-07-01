@@ -2,7 +2,7 @@
 <html manifest="rgbtone.appcache">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>RGB to HEX to RGB</title>
+	<title>Convert RGB to HEX to RGB</title>
 	
 	<meta name="description" content="RGBTONE is a simple HEX to RGB (and vise versa) color converting app." />
 	
@@ -14,42 +14,17 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 </head>
 <body>
-<div class="container">
-	<header>
-		<h1>RGBTONE</h1>
-		<h2>Convert hex to rgb and vise versa</h2>
-		<div id="preview" class="transparent">
-			<div class="color-area" id="previewcolor" style="background:#fff;"></div>
-			<div class="chip-info">
-				<p><strong>Preview</strong></p>
-				<p class="value" id="previewtitle">#fff</p>
-			</div>
-			<div id="save">Save Color</div>
+	<div class="container">
+		<form action="/" method="get" id="form">
+			<label for="hex" class="screen-reader-text">Hex #. Shorthand notation is supported. You do not need to include the #.</label>
+			<input type="text" id="hex" name="hex" placeholder="#dc5a23" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" />
+			<label for="rgb" class="screen-reader-text">RGB Values. Separate each color value with a comma.</label>
+			<input type="text" id="rgb" name="rgb" placeholder="172, 209, 35" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" />
+			<input type="submit" name="submit" value="Save Color">
 		</div>
-	</header>
-	<section>
-		<div class="half">
-			<label for="hex">Hex #</label>
-			<input type="text" id="hex" name="hex" placeholder="#dc5a23" spellcheck="false" autocorrect="off" autocapitalize="off" />
-			<div class="help-text">
-				<p id="shorthand">Shorthand notation is supported.</p>
-				<p>You do not need to include the #.</p>
-			</div>
-		</div>
-		<div class="half last">
-			<label for="rgb">RGB Values</label>
-			<input type="text" id="rgb" name="rgb" placeholder="172, 209, 35" spellcheck="false" autocorrect="off" autocapitalize="off" />
-			<div class="help-text">
-				<p>The order is red, green, blue.</p>
-				<p>Separate each color value with a comma.</p>
-			</div>
-		</div>
-	</section>
-</div>
-<div class="colors">
-	<h2 id="savedtitle" class="hide" style="margin-bottom: 12px;">Your saved colors<span id="reset">Reset</span></h2>
-	<div id="savedcolors"></div>
-</div>
-<script src="js/script.js" type="text/javascript"></script>
+	</div>
+	<div id="saved-colors"></div>
+	<button id="clear" title="Clear saved colors">&times;</button>
+	<script src="js/script.js" type="text/javascript"></script>
 </body>
 </html>
