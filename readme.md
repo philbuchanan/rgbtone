@@ -11,4 +11,4 @@ The current version (3.0) has only been tested in (however it should work in som
 - Firefox 28+
 - Mobile Safari in iOS 7 (iPhone and iPad)
 
-[Use the tool](http://rgbtone.com).
+[Use the tool](http://rgbtone.philbuchanan.com).
